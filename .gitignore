@@ -1,2 +1,3 @@
 squareline/cache/*
-exported/*
+squareline/backup/*
+exported/build/*

@@ -4,7 +4,15 @@ This project should result in a control unit of a mobile home. The aim of the pr
 
 The whole thing will work together with WOMO\_LIN to ensure the greatest possible compatibility with different manufacturers.
 
-# License
+## Current State
+
+Currently, the design is being developed and implemented. As soon as this is completed, the necessary functions will be added.
+
+## Screenshots
+
+<img src="screenshots/mainscreen.png?raw=true" alt="Main Screen" width="50%">
+
+## License
 
 rv-smart-tanksensor (c) by Martin Verges.
 
