@@ -20,3 +20,8 @@ rv-smart-tanksensor is licensed under a Creative Commons Attribution-NonCommerci
 
 You should have received a copy of the license along with this work.
 If not, see <http://creativecommons.org/licenses/by-nc-sa/4.0/>.
+
+### Design
+
+A special thanks to the excellent designer [Florian Koczy](https://koczy-design.de), who developed the design for this project!
+
