@@ -36,15 +36,19 @@ BIN 				:= $(BIN_DIR)/demo
 COMPILE				= $(CC) $(CFLAGS) $(INC) $(DEFINES)
 
 # Automatically include all source files
-SRCS 				:= $(shell find $(SRC_DIR) -type f -name '*.c' -not -path '*/\.*')
+SRCS 				:= $(shell find $(SRC_DIR) -type f -name '*.c' -not -path '*/\.*' -not -path '*/examples/*' -not -path '*/demos/*' -not -path '*/tests/*' -not -path '*/squareline_generator/*')
 OBJECTS    			:= $(patsubst $(SRC_DIR)%,$(BUILD_DIR)/%,$(SRCS:.$(SRC_EXT)=.$(OBJ_EXT)))
 
-all: default
+all: update default
 
 $(BUILD_DIR)/%.$(OBJ_EXT): $(SRC_DIR)/%.$(SRC_EXT)
 	@echo 'Building project file: $<'
 	@mkdir -p $(dir $@)
 	@$(COMPILE) -c -o "$@" "$<"
+
+update: 
+	-rm -f $(SRC_DIR)/squareline_generator/ui_events.c
+	-mv $(SRC_DIR)/squareline_generator/* $(SRC_DIR)/ui/
 
 default: $(OBJECTS)
 	@mkdir -p $(BIN_DIR)

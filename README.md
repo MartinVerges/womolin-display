@@ -11,6 +11,7 @@ Currently, the design is being developed and implemented. As soon as this is com
 ## Screenshots
 
 <img src="screenshots/mainscreen.png?raw=true" alt="Main Screen" width="50%">
+<img src="screenshots/settings.png?raw=true" alt="Main Screen" width="50%">
 
 ## License
 
