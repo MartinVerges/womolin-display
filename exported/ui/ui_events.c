@@ -1,4 +1,3 @@
-#include<time.h>
 #include "ui.h"
 
 void NAV_BTTN_ENABLE(struct _lv_obj_t * bttn, struct _lv_obj_t * icon) {
@@ -34,23 +33,13 @@ void NAV_BTTN_DISABLE(struct _lv_obj_t * bttn, struct _lv_obj_t * icon) {
 }*/
 
 void LOADSCREEN(lv_event_t * e) {
-	NAV_BTTN_ENABLE(ui_NavButton1, ui_NavIcon1);
+	NAV_BTTN_ENABLE(ui_NavButton2, ui_NavIcon2);
 
 	lv_bar_set_value(ui_Level1, 50, LV_ANIM_OFF);
 	lv_label_set_text_fmt(ui_Level1State, "%d%%", 50);
 
 	lv_bar_set_value(ui_Level2, 50, LV_ANIM_OFF);
 	lv_label_set_text_fmt(ui_Level2State, "%d%%", 50);
-	
-	lv_label_set_text_fmt(ui_DateIndicator, "%d%%", 50);
-
-
-	time_t t;
-    t = time(NULL);
-    struct tm tm;
-	tm = *localtime(&t);
-	lv_label_set_text_fmt(ui_TimeIndicator, "%02d:%02d", tm.tm_hour, tm.tm_min);
-	lv_label_set_text_fmt(ui_DateIndicator, "%02d-%02d-%04d", tm.tm_mday, tm.tm_mon+1, tm.tm_year+1900);
 }
 
 void ONCLICK_NAV_1(lv_event_t * e) {

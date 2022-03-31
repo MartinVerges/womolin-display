@@ -1,12 +1,3 @@
-/**
- * @file lv_drv_conf.h
- * Configuration file for v8.1.1-dev
- */
-
-/*
- * COPY THIS FILE AS lv_drv_conf.h
- */
-
 /* clang-format off */
 #if 1 /*Set it to "1" to enable the content*/
 
@@ -86,7 +77,7 @@
 
 /* SDL based drivers for display, mouse, mousewheel and keyboard*/
 #ifndef USE_SDL
-# define USE_SDL 	1
+# define USE_SDL 0
 #endif
 
 /* Hardware accelerated SDL driver */
@@ -95,8 +86,8 @@
 #endif
 
 #if USE_SDL || USE_SDL_GPU
-#  define SDL_HOR_RES     1024
-#  define SDL_VER_RES     600
+#  define SDL_HOR_RES     480
+#  define SDL_VER_RES     320
 
 /* Scale window by this factor (useful when simulating small screens) */
 #  define SDL_ZOOM        1
@@ -112,6 +103,32 @@
 #  define SDL_DUAL_DISPLAY            0
 #endif
 
+/*-------------------
+ *  Monitor of PC
+ *-------------------*/
+
+/*DEPRECATED: Use the SDL driver instead. */
+#ifndef USE_MONITOR
+#  define USE_MONITOR         0
+#endif
+
+#if USE_MONITOR
+#  define MONITOR_HOR_RES     480
+#  define MONITOR_VER_RES     320
+
+/* Scale window by this factor (useful when simulating small screens) */
+#  define MONITOR_ZOOM        1
+
+/* Used to test true double buffering with only address changing.
+ * Use 2 draw buffers, bith with MONITOR_HOR_RES x MONITOR_VER_RES size*/
+#  define MONITOR_DOUBLE_BUFFERED 0
+
+/*Eclipse: <SDL2/SDL.h>    Visual Studio: <SDL.h>*/
+#  define MONITOR_SDL_INCLUDE_PATH    <SDL2/SDL.h>
+
+/*Open two windows to test multi display support*/
+#  define MONITOR_DUAL            0
+#endif
 
 /*-----------------------------------
  *  Native Windows (including mouse)
@@ -290,7 +307,7 @@
  *  Linux frame buffer device (/dev/fbx)
  *-----------------------------------------*/
 #ifndef USE_FBDEV
-#  define USE_FBDEV           0
+#  define USE_FBDEV           1
 #endif
 
 #if USE_FBDEV
@@ -366,6 +383,31 @@
 /*No settings*/
 #endif
 
+
+/*---------------------------------------
+ * Mouse or touchpad on PC (using SDL)
+ *-------------------------------------*/
+/*DEPRECATED: Use the SDL driver instead. */
+#ifndef USE_MOUSE
+#  define USE_MOUSE           0
+#endif
+
+#if USE_MOUSE
+/*No settings*/
+#endif
+
+/*-------------------------------------------
+ * Mousewheel as encoder on PC (using SDL)
+ *------------------------------------------*/
+/*DEPRECATED: Use the SDL driver instead. */
+#ifndef USE_MOUSEWHEEL
+#  define USE_MOUSEWHEEL      0
+#endif
+
+#if USE_MOUSEWHEEL
+/*No settings*/
+#endif
+
 /*-------------------------------------------------
  * Touchscreen, mouse/touchpad or keyboard as libinput interface (for Linux based systems)
  *------------------------------------------------*/
@@ -388,7 +430,7 @@
  * Mouse or touchpad as evdev interface (for Linux based systems)
  *------------------------------------------------*/
 #ifndef USE_EVDEV
-#  define USE_EVDEV           0
+#  define USE_EVDEV           1
 #endif
 
 #ifndef USE_BSD_EVDEV
@@ -396,17 +438,18 @@
 #endif
 
 #if USE_EVDEV || USE_BSD_EVDEV
-#  define EVDEV_NAME   "/dev/input/event0"        /*You can use the "evtest" Linux tool to get the list of devices and test them*/
+#  define EVDEV_NAME   "/dev/input/event2"        /*You can use the "evtest" Linux tool to get the list of devices and test them*/
 #  define EVDEV_SWAP_AXES         0               /*Swap the x and y axes of the touchscreen*/
 
-#  define EVDEV_CALIBRATE         0               /*Scale and offset the touchscreen coordinates by using maximum and minimum values for each axis*/
+#  define EVDEV_CALIBRATE         1               /*Scale and offset the touchscreen coordinates by using maximum and minimum values for each axis*/
 
 #  if EVDEV_CALIBRATE
 #    define EVDEV_HOR_MIN         0               /*to invert axis swap EVDEV_XXX_MIN by EVDEV_XXX_MAX*/
-#    define EVDEV_HOR_MAX      4096               /*"evtest" Linux tool can help to get the correct calibraion values>*/
+#    define EVDEV_HOR_MAX       799               /*"evtest" Linux tool can help to get the correct calibraion values>*/
 #    define EVDEV_VER_MIN         0
-#    define EVDEV_VER_MAX      4096
+#    define EVDEV_VER_MAX       479
 #  endif  /*EVDEV_CALIBRATE*/
+
 #endif  /*USE_EVDEV*/
 
 /*-------------------------------------------------
