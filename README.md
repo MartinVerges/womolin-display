@@ -13,6 +13,25 @@ Currently, the design is being developed and implemented. As soon as this is com
 <img src="screenshots/mainscreen.png?raw=true" alt="Main Screen" width="50%">
 <img src="screenshots/settings.png?raw=true" alt="Main Screen" width="50%">
 
+## Prepare simulator
+
+In order to run it on a simulator, you have to change the Symlink of `lv_conf.h`, `lv_drv_conf.h`, and `Makefile` to simulator.
+
+```
+ln -sf lv_conf.h.simulator lv_conf.h
+ln -sf lv_drv_conf.h.simulator lv_drv_conf.h
+ln -sf Makefile.simulator Makefile
+make clean
+```
+
+To run it on the Raspberry PI, please use:
+```
+ln -sf lv_conf.h.raspberry lv_conf.h
+ln -sf lv_drv_conf.h.raspberry lv_drv_conf.h
+ln -sf Makefile.raspberry Makefile
+make clean
+```
+
 ## License
 
 rv-smart-tanksensor (c) by Martin Verges.
