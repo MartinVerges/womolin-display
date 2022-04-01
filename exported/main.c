@@ -10,13 +10,18 @@
 #include <unistd.h>
 #define SDL_MAIN_HANDLED /*To fix SDL's "undefined reference to WinMain" issue*/
 #include <SDL2/SDL.h>
-#include "lvgl/lvgl.h"
-#include "lv_drivers/sdl/sdl.h"
-#include "lv_drivers/display/fbdev.h"
-#include "lv_drivers/indev/evdev.h"
+#include <lvgl.h>
+#include <sdl/sdl.h>
+#include <display/fbdev.h>
+#include <indev/evdev.h>
 #include "ui/ui.h"
 #include <linux/input.h>
 #include <time.h>
+
+#include <mqtt.h>
+struct mqtt_client client; /* instantiate the client */
+//mqtt_init(&client, ...);   /* initialize the client */
+
 
 /*********************
  *      STATIC VARS

@@ -24,14 +24,20 @@ CFLAGS 				:= -O0 -g $(WARNINGS)
 DEFINES				:= -D SIMULATOR=0 -D LV_BUILD_TEST=0
 
 # Include simulator inc folder first so lv_conf.h from custom UI can be used instead
-INC 				:= -I./ -I./lvgl/
+INCLUDES			:= -I./ -I./libs/lvgl/src/ -I./libs/lv_drivers/ -I./libs/mqtt-c/include -I./libs/
 LDLIBS	 			:= -lm
 BIN 				:= $(BIN_DIR)/rv-hud
 
-COMPILE				= $(CC) $(CFLAGS) $(INC) $(DEFINES)
+COMPILE				= $(CC) $(CFLAGS) $(INCLUDES) $(DEFINES)
 
 # Automatically include all source files
-SRCS 				:= $(shell find $(SRC_DIR) -type f -name '*.c' -not -path '*/\.*' -not -path '*/examples/*' -not -path '*/demos/*' -not -path '*/tests/*' -not -path '*/squareline_generator/*')
+SRCS 				:= $(shell find $(SRC_DIR) -type f -name '*.c' \
+							-not -path '*/\.*' \
+							-not -path '*/examples/*' \
+							-not -path '*/demos/*' \
+							-not -path '*/tests/*' \
+							-not -path '*/squareline_generator/*' \
+							-not -path '*/tests.c')
 OBJECTS    			:= $(patsubst $(SRC_DIR)%,$(BUILD_DIR)/%,$(SRCS:.$(SRC_EXT)=.$(OBJ_EXT)))
 
 all: default
