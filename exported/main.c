@@ -5,7 +5,6 @@
 /*********************
  *      INCLUDES
  *********************/
-#include "main.h"
 #define _DEFAULT_SOURCE /* needed for usleep() */
 #include <unistd.h>
 #define SDL_MAIN_HANDLED /*To fix SDL's "undefined reference to WinMain" issue*/
@@ -18,10 +17,12 @@
 #include <linux/input.h>
 #include <time.h>
 
-#include <mqtt.h>
-struct mqtt_client client; /* instantiate the client */
-//mqtt_init(&client, ...);   /* initialize the client */
-
+/*********************
+ *   MQTT-c
+ *********************/
+#include "src/mqtt_activity.h"
+extern struct mqtt_client my_mqtt_client;
+static lv_timer_t * timer_mqtt_sync;
 
 /*********************
  *      STATIC VARS
@@ -39,15 +40,14 @@ static lv_indev_t * indev_touchpad;
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
-void update_clock() {
-	time_t t;
-        t = time(NULL);
-        struct tm tm;
-	tm = *localtime(&t);
-	lv_label_set_text_fmt(ui_TimeIndicator, "%02d:%02d:%02d", tm.tm_hour, tm.tm_min, tm.tm_sec);
-	lv_label_set_text_fmt(ui_DateIndicator, "%02d-%02d-%04d", tm.tm_mday, tm.tm_mon+1, tm.tm_year+1900);
-}
+void update_clock();
+void hal_init_simulator(void);
+void hal_init_raspberry(void);
 
+
+void mqtt_sync_wrapper(lv_timer_t * timer) {
+  mqtt_sync(timer->user_data);
+}
 
 int main(int argc, char **argv) {
   (void)argc; /* Unused */
@@ -61,8 +61,11 @@ int main(int argc, char **argv) {
 
   ui_init();
 
+  mqtt_prepare_loop(&my_mqtt_client);
+
   // Update the clock
   timer_upd_clock = lv_timer_create(update_clock, 500, NULL);
+  timer_mqtt_sync = lv_timer_create(mqtt_sync_wrapper, 500, &my_mqtt_client);
 
   /*Handle LitlevGL tasks (tickless mode)*/
   while(1) {
@@ -122,4 +125,13 @@ void hal_init_raspberry(void) {
   indev_drv.read_cb = evdev_read;
   indev_touchpad = lv_indev_drv_register(&indev_drv);
 #endif
+}
+
+void update_clock() {
+	time_t t;
+        t = time(NULL);
+        struct tm tm;
+	tm = *localtime(&t);
+	lv_label_set_text_fmt(ui_TimeIndicator, "%02d:%02d:%02d", tm.tm_hour, tm.tm_min, tm.tm_sec);
+	lv_label_set_text_fmt(ui_DateIndicator, "%02d-%02d-%04d", tm.tm_mday, tm.tm_mon+1, tm.tm_year+1900);
 }

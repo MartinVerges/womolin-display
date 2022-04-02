@@ -12,6 +12,10 @@
         "environment": [],
         "externalConsole": false,
         "MIMode": "gdb",
+        "linux": {
+          "MIMode": "gdb",
+          "miDebuggerPath": "/usr/bin/gdb"
+        },
         "setupCommands": [
           {
             "description": "Enable pretty-printing for gdb",
@@ -19,6 +23,12 @@
             "ignoreFailures": true
           }
         ],
+        "logging": {
+          "moduleLoad": false,
+          "trace": true
+        },
+        "visualizerFile": "${workspaceFolder}/my.natvis",
+        "showDisplayString": true,
         "preLaunchTask": "Build"
       }
     ]
