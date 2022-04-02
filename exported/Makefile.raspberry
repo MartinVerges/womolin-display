@@ -24,7 +24,12 @@ CFLAGS 				:= -O0 -g $(WARNINGS)
 DEFINES				:= -D SIMULATOR=0 -D LV_BUILD_TEST=0
 
 # Include simulator inc folder first so lv_conf.h from custom UI can be used instead
-INCLUDES			:= -I./ -I./libs/lvgl/src/ -I./libs/lv_drivers/ -I./libs/mqtt-c/include -I./libs/
+INCLUDES			:= -I./ \
+						-I./libs/ \
+						-I./libs/lvgl/src/ \
+						-I./libs/lv_drivers/ \
+						-I./libs/mqtt-c/include/ \
+						-I./libs/ArduinoJson/src/ 
 LDLIBS	 			:= -lm
 BIN 				:= $(BIN_DIR)/rv-hud
 

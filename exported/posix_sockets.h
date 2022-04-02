@@ -13,6 +13,7 @@
 #include <ioctl.h>
 #endif
 #include <fcntl.h>
+#include <unistd.h>
 
 /*
     A template for opening a non-blocking POSIX socket.

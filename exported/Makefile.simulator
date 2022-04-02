@@ -7,7 +7,7 @@ PROJECT 			?= lvgl-sdl
 MAKEFLAGS 			:= -j $(shell nproc)
 SRC_EXT      		:= c
 OBJ_EXT				:= o
-CC 					?= gcc
+CC 					?= g++
 
 SRC_DIR				:= ./
 WORKING_DIR			:= ./build
@@ -41,13 +41,7 @@ BIN 				:= $(BIN_DIR)/demo
 COMPILE				= $(CC) $(CFLAGS) $(INCLUDES) $(DEFINES)
 
 # Automatically include all source files
-SRCS 				:= $(shell find $(SRC_DIR) -type f -name '*.c' \
-							-not -path '*/\.*' \
-							-not -path '*/examples/*' \
-							-not -path '*/demos/*' \
-							-not -path '*/tests/*' \
-							-not -path '*/squareline_generator/*' \
-							-not -path '*/tests.c')
+SRCS 				:= $(shell find $(SRC_DIR) -type f -regex '.*\.\(c\|cpp\)' -not -regex '.*\/\(examples\|extras\|demos\|tests\)\/.*' -not -name 'tests.c' )
 OBJECTS    			:= $(patsubst $(SRC_DIR)%,$(BUILD_DIR)/%,$(SRCS:.$(SRC_EXT)=.$(OBJ_EXT)))
 
 all: update default
