@@ -1,8 +1,3 @@
-// SquareLine LVGL GENERATED FILE
-// EDITOR VERSION: SquareLine Studio 1.0.5
-// LVGL VERSION: 8.2
-// PROJECT: hud
-
 #ifndef _HUD_UI_H
 #define _HUD_UI_H
 
@@ -55,6 +50,7 @@ extern lv_obj_t * ui_MqttConnection;
 extern lv_obj_t * ui_MqttEnabled;
 extern lv_obj_t * ui_MqttServerLabel;
 extern lv_obj_t * ui_MqttHost;
+extern lv_obj_t * ui_MqttPort;
 extern lv_obj_t * ui_MqttUsername;
 extern lv_obj_t * ui_MqttPassword;
 extern lv_obj_t * ui_FreshWaterLevel;
@@ -62,17 +58,22 @@ extern lv_obj_t * ui_EnableFreshWater;
 extern lv_obj_t * ui_FreshWaterLabel;
 extern lv_obj_t * ui_FreshWaterTopic;
 extern lv_obj_t * ui_GreyWaterLevel;
-extern lv_obj_t * ui_EnableGrayWater;
+extern lv_obj_t * ui_EnableGreyWater;
 extern lv_obj_t * ui_GreyWaterLabel;
 extern lv_obj_t * ui_GreyWaterTopic;
 
-void LOADSCREEN(lv_event_t * e);
+void NAV_BTTN_ENABLE(lv_obj_t * bttn, lv_obj_t * icon);
+void NAV_BTTN_DISABLE(lv_obj_t * bttn, lv_obj_t * icon);
 void ONCLICK_NAV_1(lv_event_t * e);
 void ONCLICK_NAV_2(lv_event_t * e);
 void ONCLICK_NAV_3(lv_event_t * e);
 void ONCLICK_NAV_4(lv_event_t * e);
 void ONCLICK_NAV_5(lv_event_t * e);
 void PREFILL_SETTINGS(lv_event_t * e);
+void CLOSE_SETTINGS(lv_event_t * e);
+void LOADSCREEN(lv_event_t * e);
+
+void switch_state(lv_obj_t * obj, bool state);
 
 LV_IMG_DECLARE(ui_img_bg_car_png)               // assets/bg_car.png
 LV_IMG_DECLARE(ui_img_icon_water_content_clean_png)    // assets/icon_water_content_clean.png
@@ -86,12 +87,10 @@ LV_IMG_DECLARE(ui_img_icon_temperature_png)     // assets/icon_temperature.png
 LV_IMG_DECLARE(ui_img_bg_png)                   // assets/bg.png
 LV_IMG_DECLARE(ui_img_icon_close_png)           // assets/icon_close.png
 
-
 LV_FONT_DECLARE(ui_font_rubik_SemiBold_22)
 LV_FONT_DECLARE(ui_font_rubik_bold_53)
 LV_FONT_DECLARE(ui_font_rubik_light_18)
 LV_FONT_DECLARE(ui_font_rubik_light_40)
-
 
 void ui_init(void);
 

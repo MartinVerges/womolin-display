@@ -61,36 +61,12 @@ config_t configuration;
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
-void load_configuration(const char *filename, config_t &config) {
-  std::fstream fs;
-  fs.open (filename, std::fstream::in);
-
-  StaticJsonDocument<4096> doc;
-  DeserializationError error = deserializeJson(doc, fs);
-  if (error) {
-    perror("Failed to read file, using default configuration");
-  } 
-  config.mqtt_hostname =  doc["mqtt_hostname"] | "localhost";
-  config.mqtt_port = doc["mqtt_port"] | "1883";
-  config.mqtt_topic = doc["mqtt_topic"] | "test";
-  config.mqtt_user = doc["mqtt_user"] | "";
-  config.mqtt_pass = doc["mqtt_pass"] | "";
-  /*
-  cout << "MQTT Hostname = " << config.mqtt_hostname << endl;
-  cout << "MQTT Port     = " << config.mqtt_port << endl;
-  cout << "MQTT Topic    = " << config.mqtt_topic << endl;
-  cout << "MQTT Username = " << config.mqtt_user << endl;
-  cout << "MQTT Password = " << config.mqtt_pass << endl;
-  */
-  fs.close();
-}
-
 int main(int argc, char **argv) {
   (void)argc; /* Unused */
   (void)argv; /* Unused */
 
   // Load last known configuration
-  load_configuration(config_filename, configuration);
+  load_configuration();
 
   // Initialize LVGL
   lv_init();
@@ -116,8 +92,58 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-void mqtt_sync_wrapper(lv_timer_t * timer) {
-  mqtt_sync(static_cast<mqtt_client*>(timer->user_data));
+bool save_configuration() {
+  std::fstream fs;
+  fs.open (config_filename, std::fstream::out | std::fstream::trunc);
+  StaticJsonDocument<4096> doc;
+  doc["mqtt_enabled"] = configuration.mqtt_enabled;
+  doc["mqtt_hostname"] = configuration.mqtt_hostname;
+  doc["mqtt_port"] = configuration.mqtt_port;
+  doc["mqtt_topic"] = configuration.mqtt_topic;
+  doc["mqtt_user"] = configuration.mqtt_user;
+  doc["mqtt_pass"] = configuration.mqtt_pass;
+  doc["freshwater_enabled"] = configuration.freshwater_enabled;
+  doc["freshwater_topic"] = configuration.freshwater_topic;
+  doc["greywater_enabled"] = configuration.greywater_enabled;
+  doc["greywater_topic"] = configuration.greywater_topic;
+
+  if (serializeJsonPretty(doc, fs) == 0) {
+    perror("Failed to write to file!");
+    fs.close();
+    return false;
+  }
+  fs.close();
+  return true;
+}
+
+void load_configuration() {
+  std::fstream fs;
+  fs.open (config_filename, std::fstream::in);
+
+  StaticJsonDocument<4096> doc;
+  DeserializationError error = deserializeJson(doc, fs);
+  if (error) {
+    perror("Failed to read file, using default configuration");
+  }
+  configuration.mqtt_enabled = doc["mqtt_enabled"] | false;
+  configuration.mqtt_hostname =  doc["mqtt_hostname"] | "localhost";
+  configuration.mqtt_port = doc["mqtt_port"] | "1883";
+  configuration.mqtt_topic = doc["mqtt_topic"] | "test";
+  configuration.mqtt_user = doc["mqtt_user"] | "";
+  configuration.mqtt_pass = doc["mqtt_pass"] | "";
+  configuration.freshwater_enabled = doc["freshwater_enabled"] | false;
+  configuration.freshwater_topic = doc["freshwater_topic"] | "freshwater/tanklevel";
+  configuration.greywater_enabled = doc["greywater_enabled"] | false;
+  configuration.greywater_topic = doc["greywater_topic"] | "greywater/tanklevel";
+
+  /*
+  cout << "MQTT Hostname = " << config.mqtt_hostname << endl;
+  cout << "MQTT Port     = " << config.mqtt_port << endl;
+  cout << "MQTT Topic    = " << config.mqtt_topic << endl;
+  cout << "MQTT Username = " << config.mqtt_user << endl;
+  cout << "MQTT Password = " << config.mqtt_pass << endl;
+  */
+  fs.close();
 }
 
 void hal_init_simulator(void) {
@@ -178,13 +204,18 @@ void display_update_clock(lv_timer_t *timer) {
 	lv_label_set_text_fmt(ui_DateIndicator, "%02d-%02d-%04d", tm.tm_mday, tm.tm_mon+1, tm.tm_year+1900);
 }
 
+/*********************
+ *   MQTT related
+ *********************/
+void mqtt_sync_wrapper(lv_timer_t * timer) {
+  mqtt_sync(static_cast<mqtt_client*>(timer->user_data));
+}
 
 void mqtt_prepare(struct mqtt_client* client, config_t &config) {
   int bufsize = 2048;
   mqtt_state.client_id = "mydisplay";
   mqtt_state.hostname = config.mqtt_hostname.c_str();
   mqtt_state.port = config.mqtt_port.c_str();
-  mqtt_state.topic = config.mqtt_topic.c_str();
   mqtt_state.user = config.mqtt_user.c_str();
   mqtt_state.pass = config.mqtt_pass.c_str();
   mqtt_state.sendbuf = (uint8_t*)malloc(bufsize);
@@ -192,8 +223,8 @@ void mqtt_prepare(struct mqtt_client* client, config_t &config) {
   mqtt_state.recvbuf = (uint8_t*)malloc(bufsize);
   mqtt_state.recvbufsz = bufsize;
 
+  printf("[MQTT] Connecting to %s:%s\n", mqtt_state.hostname, mqtt_state.port);
   mqtt_init_reconnect(client, mqtt_reconnect_client, &mqtt_state, mqtt_publish_callback);
-  printf("%s listening for '%s' messages.\n", mqtt_state.hostname, mqtt_state.topic);
 }
 
 void mqtt_reconnect_client(struct mqtt_client* client, void **reconnect_state_vptr) {
@@ -214,7 +245,9 @@ void mqtt_reconnect_client(struct mqtt_client* client, void **reconnect_state_vp
   );
   uint8_t connect_flags = MQTT_CONNECT_CLEAN_SESSION;
   mqtt_connect(client, reconnect_state->client_id, NULL, NULL, 0, reconnect_state->user, reconnect_state->pass, connect_flags, 400);
-  mqtt_subscribe(client, reconnect_state->topic, 0);
+    
+  if (configuration.freshwater_enabled) mqtt_subscribe(client, configuration.freshwater_topic.c_str(), 0);
+  if (configuration.greywater_enabled) mqtt_subscribe(client, configuration.greywater_topic.c_str(), 0);
 }
 
 void mqtt_publish_callback(void** unused, struct mqtt_response_publish *published) {
@@ -227,13 +260,13 @@ void mqtt_publish_callback(void** unused, struct mqtt_response_publish *publishe
   memcpy(application_message, published->application_message, published->application_message_size);
   application_message[published->application_message_size] = '\0';
  
+  // FIXME: get rid of c_str()
   printf("Received publish('%s'): %s\n", topic_name, application_message);
-  if (strcmp(topic_name, "freshwater/tanklevel") == 0) {
+  if (configuration.freshwater_enabled && strcmp(topic_name, configuration.freshwater_topic.c_str()) == 0) {
     lv_bar_set_value(ui_Level1, atoi(application_message), LV_ANIM_ON);
     lv_label_set_text_fmt(ui_Level1State, "%d%%", atoi(application_message));
   }
-  printf("Received publish('%s'): %s\n", topic_name, application_message);
-  if (strcmp(topic_name, "greywater/tanklevel") == 0) {
+  if (configuration.greywater_enabled && strcmp(topic_name, configuration.greywater_topic.c_str()) == 0) {
     lv_bar_set_value(ui_Level2, atoi(application_message), LV_ANIM_ON);
     lv_label_set_text_fmt(ui_Level2State, "%d%%", atoi(application_message));
   }
@@ -241,3 +274,119 @@ void mqtt_publish_callback(void** unused, struct mqtt_response_publish *publishe
   free(topic_name);
   free(application_message);
 }
+
+/*********************
+ *   LVGL related
+ *********************/
+void NAV_BTTN_ENABLE(lv_obj_t * bttn, lv_obj_t * icon) {
+	lv_obj_set_style_bg_color(bttn, lv_color_hex(0x2DAB66), LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_bg_grad_dir(bttn, LV_GRAD_DIR_VER, LV_PART_MAIN | LV_STATE_DEFAULT);
+	lv_obj_set_style_img_recolor(icon, lv_color_hex(0x141414), LV_PART_MAIN | LV_STATE_DEFAULT);
+	lv_obj_set_style_img_recolor_opa(icon, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+}
+void NAV_BTTN_DISABLE(lv_obj_t * bttn, lv_obj_t * icon) {
+	lv_obj_set_style_bg_color(bttn, lv_color_hex(0x141414), LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_bg_grad_dir(bttn, LV_GRAD_DIR_NONE, LV_PART_MAIN | LV_STATE_DEFAULT);
+	lv_obj_set_style_img_recolor(icon, lv_color_hex(0x888888), LV_PART_MAIN | LV_STATE_DEFAULT);
+	lv_obj_set_style_img_recolor_opa(icon, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+}
+
+void ONCLICK_NAV_1(lv_event_t * e) {
+	(void)e;
+	NAV_BTTN_ENABLE(ui_NavButton1, ui_NavIcon1);
+	NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
+	NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
+	NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
+	NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
+}
+
+void ONCLICK_NAV_2(lv_event_t * e) {
+	(void)e;
+	NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
+	NAV_BTTN_ENABLE(ui_NavButton2, ui_NavIcon2);
+	NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
+	NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
+	NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
+}
+
+void ONCLICK_NAV_3(lv_event_t * e) {
+	(void)e;
+	NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
+	NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
+	NAV_BTTN_ENABLE(ui_NavButton3, ui_NavIcon3);
+	NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
+	NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
+}
+
+void ONCLICK_NAV_4(lv_event_t * e) {
+	(void)e;
+	NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
+	NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
+	NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
+	NAV_BTTN_ENABLE(ui_NavButton4, ui_NavIcon4);
+	NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
+}
+void ONCLICK_NAV_5(lv_event_t * e) {
+	(void)e;
+	NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
+	NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
+	NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
+	NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
+	NAV_BTTN_ENABLE(ui_NavButton5, ui_NavIcon5);
+}
+ 
+void PREFILL_SETTINGS(lv_event_t * e) {
+	(void)e;
+
+  switch_state(ui_MqttEnabled, configuration.mqtt_enabled);
+	lv_textarea_set_text(ui_MqttHost, configuration.mqtt_hostname.c_str());
+	lv_textarea_set_text(ui_MqttPort, configuration.mqtt_port.c_str());
+	lv_textarea_set_text(ui_MqttUsername, configuration.mqtt_user.c_str());
+	lv_textarea_set_text(ui_MqttPassword, configuration.mqtt_pass.c_str());
+
+  switch_state(ui_EnableFreshWater, configuration.freshwater_enabled);
+	lv_textarea_set_text(ui_FreshWaterTopic, configuration.freshwater_topic.c_str());
+
+  switch_state(ui_EnableGreyWater, configuration.greywater_enabled);
+	lv_textarea_set_text(ui_GreyWaterTopic, configuration.greywater_topic.c_str());
+}
+
+void CLOSE_SETTINGS(lv_event_t * e) {
+  configuration.mqtt_enabled = lv_obj_has_state(ui_MqttEnabled, LV_STATE_CHECKED);
+  configuration.mqtt_hostname = lv_textarea_get_text(ui_MqttHost);
+  configuration.mqtt_port = lv_textarea_get_text(ui_MqttPort);
+  configuration.mqtt_user = lv_textarea_get_text(ui_MqttUsername);
+  configuration.mqtt_pass = lv_textarea_get_text(ui_MqttPassword);
+  configuration.mqtt_topic = lv_textarea_get_text(ui_FreshWaterTopic);
+
+  configuration.freshwater_enabled = lv_obj_has_state(ui_EnableFreshWater, LV_STATE_CHECKED);
+  configuration.freshwater_topic = lv_textarea_get_text(ui_FreshWaterTopic);
+
+  configuration.greywater_enabled = lv_obj_has_state(ui_EnableGreyWater, LV_STATE_CHECKED);
+  configuration.greywater_topic = lv_textarea_get_text(ui_GreyWaterTopic);
+  save_configuration();
+}
+
+void LOADSCREEN(lv_event_t * e) {
+	(void)e;
+	NAV_BTTN_ENABLE(ui_NavButton2, ui_NavIcon2);
+}
+
+/*void NAV_BTTN_ACTIVE() {
+	lv_obj_t * parent;
+	lv_obj_t * child;
+	for(int i1 = 0; i1 < lv_obj_get_child_cnt(ui_Settings); i1++) {
+		parent  = lv_obj_get_child(ui_Settings, i1);
+		if (lv_obj_check_type(parent, &lv_obj_class)) {
+			for(int i2 = 0; i2 < lv_obj_get_child_cnt(parent); i2++) {
+				child = lv_obj_get_child(parent, i2);
+				if (lv_obj_check_type(child, &lv_switch_class)) {
+					LV_LOG_INFO("Activating Switch");
+					lv_obj_add_state(child, LV_STATE_CHECKED);
+				} else if (lv_obj_check_type(child, &lv_textarea_class)) {
+				}
+				
+			}
+		}
+	}
+}*/

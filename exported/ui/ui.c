@@ -1,8 +1,3 @@
-// SquareLine LVGL GENERATED FILE
-// EDITOR VERSION: SquareLine Studio 1.0.5
-// LVGL VERSION: 8.2
-// PROJECT: hud
-
 #include "ui.h"
 #include "ui_helpers.h"
 
@@ -46,6 +41,7 @@ lv_obj_t * ui_MqttConnection;
 lv_obj_t * ui_MqttEnabled;
 lv_obj_t * ui_MqttServerLabel;
 lv_obj_t * ui_MqttHost;
+lv_obj_t * ui_MqttPort;
 lv_obj_t * ui_MqttUsername;
 lv_obj_t * ui_MqttPassword;
 lv_obj_t * ui_FreshWaterLevel;
@@ -53,91 +49,78 @@ lv_obj_t * ui_EnableFreshWater;
 lv_obj_t * ui_FreshWaterLabel;
 lv_obj_t * ui_FreshWaterTopic;
 lv_obj_t * ui_GreyWaterLevel;
-lv_obj_t * ui_EnableGrayWater;
+lv_obj_t * ui_EnableGreyWater;
 lv_obj_t * ui_GreyWaterLabel;
 lv_obj_t * ui_GreyWaterTopic;
 
-///////////////////// TEST LVGL SETTINGS ////////////////////
-#if LV_COLOR_DEPTH != 16
-    #error "LV_COLOR_DEPTH should be 16bit to match SquareLine Studio's settings"
-#endif
-#if LV_COLOR_16_SWAP !=0
-    #error "#error LV_COLOR_16_SWAP should be 0 to match SquareLine Studio's settings"
-#endif
-
-///////////////////// ANIMATIONS ////////////////////
-
 ///////////////////// FUNCTIONS ////////////////////
-static void ui_event_MainScreen(lv_event_t * e)
-{
+static void ui_event_MainScreen(lv_event_t * e) {
     lv_event_code_t event = lv_event_get_code(e);
     if(event == LV_EVENT_SCREEN_LOADED) {
         LOADSCREEN(e);
     }
 }
-static void ui_event_ButtonSettingsOpen(lv_event_t * e)
-{
+static void ui_event_ButtonSettingsOpen(lv_event_t * e) {
     lv_event_code_t event = lv_event_get_code(e);
     if(event == LV_EVENT_CLICKED) {
         _ui_screen_change(ui_Settings, LV_SCR_LOAD_ANIM_FADE_ON, 0, 0);
     }
 }
-static void ui_event_NavButton1(lv_event_t * e)
-{
+static void ui_event_NavButton1(lv_event_t * e) {
     lv_event_code_t event = lv_event_get_code(e);
     if(event == LV_EVENT_CLICKED) {
         ONCLICK_NAV_1(e);
     }
 }
-static void ui_event_NavButton2(lv_event_t * e)
-{
+static void ui_event_NavButton2(lv_event_t * e) {
     lv_event_code_t event = lv_event_get_code(e);
     if(event == LV_EVENT_CLICKED) {
         ONCLICK_NAV_2(e);
     }
 }
-static void ui_event_NavButton3(lv_event_t * e)
-{
+static void ui_event_NavButton3(lv_event_t * e) {
     lv_event_code_t event = lv_event_get_code(e);
     if(event == LV_EVENT_CLICKED) {
         ONCLICK_NAV_3(e);
     }
 }
-static void ui_event_NavButton4(lv_event_t * e)
-{
+static void ui_event_NavButton4(lv_event_t * e) {
     lv_event_code_t event = lv_event_get_code(e);
     if(event == LV_EVENT_CLICKED) {
         ONCLICK_NAV_4(e);
     }
 }
-static void ui_event_NavButton5(lv_event_t * e)
-{
+static void ui_event_NavButton5(lv_event_t * e) {
     lv_event_code_t event = lv_event_get_code(e);
     if(event == LV_EVENT_CLICKED) {
         ONCLICK_NAV_5(e);
     }
 }
-static void ui_event_Settings(lv_event_t * e)
-{
+static void ui_event_Settings(lv_event_t * e) {
     lv_event_code_t event = lv_event_get_code(e);
     if(event == LV_EVENT_SCREEN_LOAD_START) {
         PREFILL_SETTINGS(e);
     }
 }
-static void ui_event_ButtonSettingsClose(lv_event_t * e)
-{
+static void ui_event_ButtonSettingsClose(lv_event_t * e) {
     lv_event_code_t event = lv_event_get_code(e);
     if(event == LV_EVENT_CLICKED) {
         _ui_screen_change(ui_MainScreen, LV_SCR_LOAD_ANIM_FADE_ON, 0, 0);
+        CLOSE_SETTINGS(e);
     }
 }
 
+void switch_state(lv_obj_t * obj, bool state) {
+  if (state) {
+      lv_obj_add_state(obj, LV_STATE_CHECKED);
+  } else {
+      lv_obj_clear_state(obj, LV_STATE_CHECKED);
+  }
+}
+
 ///////////////////// SCREENS ////////////////////
-void ui_MainScreen_screen_init(void)
-{
-
+void ui_MainScreen_screen_init(void) {
     // ui_MainScreen
-
     ui_MainScreen = lv_obj_create(NULL);
 
     lv_obj_clear_flag(ui_MainScreen, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_SCROLLABLE |
@@ -146,7 +129,6 @@ void ui_MainScreen_screen_init(void)
     lv_obj_add_event_cb(ui_MainScreen, ui_event_MainScreen, LV_EVENT_ALL, NULL);
 
     // ui_Content
-
     ui_Content = lv_obj_create(ui_MainScreen);
 
     lv_obj_set_height(ui_Content, 522);
@@ -457,7 +439,7 @@ void ui_MainScreen_screen_init(void)
     lv_obj_set_x(ui_Level2Label, 120);
     lv_obj_set_y(ui_Level2Label, 170);
 
-    lv_label_set_text(ui_Level2Label, "GRAY WATER");
+    lv_label_set_text(ui_Level2Label, "Grey WATER");
 
     lv_obj_clear_flag(ui_Level2Label, LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE | LV_OBJ_FLAG_GESTURE_BUBBLE |
                       LV_OBJ_FLAG_SNAPPABLE | LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM |
@@ -771,11 +753,58 @@ static void ui_event_activateKeyboard(lv_event_t * e)
     }
 }
 
-void ui_Settings_screen_init(void)
-{
+static void ui_style_textarea(lv_obj_t * obj) {
+    lv_obj_add_event_cb(obj, ui_event_activateKeyboard, LV_EVENT_FOCUSED, NULL);
+    lv_obj_set_style_text_font(obj, &ui_font_rubik_light_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(obj, lv_color_hex(0x141414), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(obj, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_opa(obj, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_left(obj, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_right(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_top(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_bottom(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_textarea_set_one_line(obj, true);
+    lv_obj_clear_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
+    lv_textarea_set_text(obj, "");
+}
 
+static void ui_style_switch(lv_obj_t * obj) {
+    lv_obj_set_style_opa(obj, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(obj, lv_color_hex(0x141414), LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(obj, 255, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(obj, lv_color_hex(0x00A099), LV_PART_INDICATOR | LV_STATE_CHECKED);
+    lv_obj_set_style_bg_opa(obj, 255, LV_PART_INDICATOR | LV_STATE_CHECKED);
+}
+
+static void ui_style_label(lv_obj_t * obj, char * text, int x, int y) {
+    lv_label_set_text(obj, text);
+    lv_obj_set_x(obj, x);
+    lv_obj_set_y(obj, y);
+    lv_obj_set_width(obj, LV_SIZE_CONTENT);
+    lv_obj_set_height(obj, LV_SIZE_CONTENT);
+    lv_obj_set_style_text_font(obj, &ui_font_rubik_light_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_opa(obj, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+}
+
+static void ui_style_position(lv_obj_t * obj, int x, int y, int height, int width, lv_align_t align) {
+    lv_obj_set_x(obj, x);
+    lv_obj_set_y(obj, y);
+    lv_obj_set_height(obj, height);
+    lv_obj_set_width(obj, width);
+    lv_obj_set_align(obj, align);
+}
+
+static void ui_style_group(lv_obj_t * obj) {
+    lv_obj_clear_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_style_opa(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_left(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_right(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_top(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_bottom(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+}
+
+void ui_Settings_screen_init(void) {
     // ui_Settings
-
     ui_Settings = lv_obj_create(NULL);
 
     lv_obj_clear_flag(ui_Settings, LV_OBJ_FLAG_SCROLLABLE);
@@ -784,7 +813,6 @@ void ui_Settings_screen_init(void)
     lv_obj_set_style_bg_img_src(ui_Settings, &ui_img_bg_png, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     // ui_ButtonSettingsClose
-
     ui_ButtonSettingsClose = lv_imgbtn_create(ui_Settings);
     lv_imgbtn_set_src(ui_ButtonSettingsClose, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_icon_close_png, NULL);
 
@@ -803,317 +831,97 @@ void ui_Settings_screen_init(void)
     lv_obj_add_event_cb(ui_ButtonSettingsClose, ui_event_ButtonSettingsClose, LV_EVENT_ALL, NULL);
 
     // ui_Keyboard
-
     ui_Keyboard = lv_keyboard_create(ui_Settings);
-
     lv_obj_set_width(ui_Keyboard, lv_pct(100));
     lv_obj_set_height(ui_Keyboard, lv_pct(35));
-
     lv_obj_set_x(ui_Keyboard, 0);
     lv_obj_set_y(ui_Keyboard, 0);
-
     lv_obj_set_align(ui_Keyboard, LV_ALIGN_BOTTOM_MID);
-
     lv_obj_clear_flag(ui_Keyboard, LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM |
                       LV_OBJ_FLAG_SCROLL_CHAIN);
 
     // ui_MqttConnection
-
     ui_MqttConnection = lv_obj_create(ui_Settings);
-
-    lv_obj_set_width(ui_MqttConnection, 302);
-    lv_obj_set_height(ui_MqttConnection, 150);
-
-    lv_obj_set_x(ui_MqttConnection, 50);
-    lv_obj_set_y(ui_MqttConnection, 50);
-
-    lv_obj_clear_flag(ui_MqttConnection, LV_OBJ_FLAG_SCROLLABLE);
-
-    lv_obj_set_style_opa(ui_MqttConnection, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_left(ui_MqttConnection, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_right(ui_MqttConnection, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_top(ui_MqttConnection, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(ui_MqttConnection, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_style_group(ui_MqttConnection);
+    ui_style_position(ui_MqttConnection, 50, 50, 165, 302, LV_ALIGN_TOP_LEFT);
 
     // ui_MqttEnabled
-
     ui_MqttEnabled = lv_switch_create(ui_MqttConnection);
-
-    lv_obj_set_width(ui_MqttEnabled, 50);
-    lv_obj_set_height(ui_MqttEnabled, 25);
-
-    lv_obj_set_x(ui_MqttEnabled, 0);
-    lv_obj_set_y(ui_MqttEnabled, 25);
-
-    lv_obj_set_style_opa(ui_MqttEnabled, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    lv_obj_set_style_bg_color(ui_MqttEnabled, lv_color_hex(0x141414), LV_PART_INDICATOR | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_MqttEnabled, 255, LV_PART_INDICATOR | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(ui_MqttEnabled, lv_color_hex(0x00A099), LV_PART_INDICATOR | LV_STATE_CHECKED);
-    lv_obj_set_style_bg_opa(ui_MqttEnabled, 255, LV_PART_INDICATOR | LV_STATE_CHECKED);
+    ui_style_position(ui_MqttEnabled, 0, 25, 25, 50, LV_ALIGN_TOP_LEFT);
+    ui_style_switch(ui_MqttEnabled);
 
     // ui_MqttServerLabel
-
     ui_MqttServerLabel = lv_label_create(ui_MqttConnection);
-
-    lv_obj_set_width(ui_MqttServerLabel, LV_SIZE_CONTENT);
-    lv_obj_set_height(ui_MqttServerLabel, LV_SIZE_CONTENT);
-
-    lv_obj_set_x(ui_MqttServerLabel, 0);
-    lv_obj_set_y(ui_MqttServerLabel, 0);
-
-    lv_label_set_text(ui_MqttServerLabel, "MQTT Server");
-
-    lv_obj_set_style_text_font(ui_MqttServerLabel, &ui_font_rubik_light_18, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_opa(ui_MqttServerLabel, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_style_label(ui_MqttServerLabel, "MQTT Server", 0, 0);
 
     // ui_MqttHost
-
     ui_MqttHost = lv_textarea_create(ui_MqttConnection);
-
-    lv_obj_set_height(ui_MqttHost, 25);
-    lv_obj_set_width(ui_MqttHost, lv_pct(80));
-
-    lv_obj_set_x(ui_MqttHost, 0);
-    lv_obj_set_y(ui_MqttHost, 25);
-
-    lv_obj_set_align(ui_MqttHost, LV_ALIGN_TOP_RIGHT);
-
-    lv_textarea_set_text(ui_MqttHost, "");
+    ui_style_position(ui_MqttHost, 0, 25, 25, lv_pct(80), LV_ALIGN_TOP_RIGHT);
+    ui_style_textarea(ui_MqttHost);
     lv_textarea_set_placeholder_text(ui_MqttHost, "IP or Hostname");
-    lv_textarea_set_one_line(ui_MqttHost, true);
 
-    lv_obj_clear_flag(ui_MqttHost, LV_OBJ_FLAG_SCROLLABLE);
-
-    lv_obj_add_event_cb(ui_MqttHost, ui_event_activateKeyboard, LV_EVENT_FOCUSED, NULL);
-    lv_obj_set_style_text_font(ui_MqttHost, &ui_font_rubik_light_18, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(ui_MqttHost, lv_color_hex(0x141414), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_MqttHost, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_opa(ui_MqttHost, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_left(ui_MqttHost, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_right(ui_MqttHost, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_top(ui_MqttHost, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(ui_MqttHost, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    // ui_MqttPort
+    ui_MqttPort = lv_textarea_create(ui_MqttConnection);
+    ui_style_position(ui_MqttPort, 0, 60, 25, lv_pct(80), LV_ALIGN_TOP_RIGHT);
+    ui_style_textarea(ui_MqttPort);
+    lv_textarea_set_placeholder_text(ui_MqttPort, "Port");
+    lv_textarea_set_accepted_chars(ui_MqttPort, "0123456789");
+    lv_textarea_set_max_length(ui_MqttPort, 5);
 
     // ui_MqttUsername
-
     ui_MqttUsername = lv_textarea_create(ui_MqttConnection);
-
-    lv_obj_set_height(ui_MqttUsername, 25);
-    lv_obj_set_width(ui_MqttUsername, lv_pct(80));
-
-    lv_obj_set_x(ui_MqttUsername, 0);
-    lv_obj_set_y(ui_MqttUsername, 60);
-
-    lv_obj_set_align(ui_MqttUsername, LV_ALIGN_TOP_RIGHT);
-
-    lv_textarea_set_text(ui_MqttUsername, "");
+    ui_style_position(ui_MqttUsername, 0, 95, 25, lv_pct(80), LV_ALIGN_TOP_RIGHT);
+    ui_style_textarea(ui_MqttUsername);
     lv_textarea_set_placeholder_text(ui_MqttUsername, "Username");
-    lv_textarea_set_one_line(ui_MqttUsername, true);
-
-    lv_obj_clear_flag(ui_MqttUsername, LV_OBJ_FLAG_SCROLLABLE);
-
-    lv_obj_add_event_cb(ui_MqttUsername, ui_event_activateKeyboard, LV_EVENT_FOCUSED, NULL);
-    lv_obj_set_style_text_font(ui_MqttUsername, &ui_font_rubik_light_18, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(ui_MqttUsername, lv_color_hex(0x141414), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_MqttUsername, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_opa(ui_MqttUsername, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_left(ui_MqttUsername, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_right(ui_MqttUsername, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_top(ui_MqttUsername, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(ui_MqttUsername, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-
+        
     // ui_MqttPassword
-
     ui_MqttPassword = lv_textarea_create(ui_MqttConnection);
-
-    lv_obj_set_height(ui_MqttPassword, 25);
-    lv_obj_set_width(ui_MqttPassword, lv_pct(80));
-
-    lv_obj_set_x(ui_MqttPassword, 0);
-    lv_obj_set_y(ui_MqttPassword, 95);
-
-    lv_obj_set_align(ui_MqttPassword, LV_ALIGN_TOP_RIGHT);
-
-    lv_textarea_set_text(ui_MqttPassword, "");
+    ui_style_position(ui_MqttPassword, 0, 130, 25, lv_pct(80), LV_ALIGN_TOP_RIGHT);
+    ui_style_textarea(ui_MqttPassword);
     lv_textarea_set_placeholder_text(ui_MqttPassword, "Password");
-    lv_textarea_set_one_line(ui_MqttPassword, true);
-
-    lv_obj_clear_flag(ui_MqttPassword, LV_OBJ_FLAG_SCROLLABLE);
-
-    lv_obj_add_event_cb(ui_MqttPassword, ui_event_activateKeyboard, LV_EVENT_FOCUSED, NULL);
-    lv_obj_set_style_text_font(ui_MqttPassword, &ui_font_rubik_light_18, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(ui_MqttPassword, lv_color_hex(0x141414), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_MqttPassword, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_opa(ui_MqttPassword, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_left(ui_MqttPassword, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_right(ui_MqttPassword, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_top(ui_MqttPassword, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(ui_MqttPassword, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     // ui_FreshWaterLevel
-
     ui_FreshWaterLevel = lv_obj_create(ui_Settings);
-
-    lv_obj_set_width(ui_FreshWaterLevel, 302);
-    lv_obj_set_height(ui_FreshWaterLevel, 50);
-
-    lv_obj_set_x(ui_FreshWaterLevel, 50);
-    lv_obj_set_y(ui_FreshWaterLevel, 200);
-
-    lv_obj_clear_flag(ui_FreshWaterLevel, LV_OBJ_FLAG_SCROLLABLE);
-
-    lv_obj_set_style_opa(ui_FreshWaterLevel, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_left(ui_FreshWaterLevel, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_right(ui_FreshWaterLevel, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_top(ui_FreshWaterLevel, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(ui_FreshWaterLevel, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_style_group(ui_FreshWaterLevel);
+    ui_style_position(ui_FreshWaterLevel, 50, 230, 50, 302, LV_ALIGN_TOP_LEFT);
 
     // ui_EnableFreshWater
-
     ui_EnableFreshWater = lv_switch_create(ui_FreshWaterLevel);
-
-    lv_obj_set_width(ui_EnableFreshWater, 50);
-    lv_obj_set_height(ui_EnableFreshWater, 25);
-
-    lv_obj_set_x(ui_EnableFreshWater, 0);
-    lv_obj_set_y(ui_EnableFreshWater, 0);
-
-    lv_obj_set_align(ui_EnableFreshWater, LV_ALIGN_BOTTOM_LEFT);
-
-    lv_obj_set_style_bg_color(ui_EnableFreshWater, lv_color_hex(0x141414), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_EnableFreshWater, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_opa(ui_EnableFreshWater, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    lv_obj_set_style_bg_color(ui_EnableFreshWater, lv_color_hex(0x00A099), LV_PART_INDICATOR | LV_STATE_CHECKED);
-    lv_obj_set_style_bg_opa(ui_EnableFreshWater, 255, LV_PART_INDICATOR | LV_STATE_CHECKED);
+    ui_style_position(ui_EnableFreshWater, 0, 0, 25, 50, LV_ALIGN_BOTTOM_LEFT);
+    ui_style_switch(ui_EnableFreshWater);
 
     // ui_FreshWaterLabel
-
     ui_FreshWaterLabel = lv_label_create(ui_FreshWaterLevel);
-
-    lv_obj_set_width(ui_FreshWaterLabel, LV_SIZE_CONTENT);
-    lv_obj_set_height(ui_FreshWaterLabel, LV_SIZE_CONTENT);
-
-    lv_obj_set_x(ui_FreshWaterLabel, 0);
-    lv_obj_set_y(ui_FreshWaterLabel, 0);
-
-    lv_label_set_text(ui_FreshWaterLabel, "Fresh water sensor");
-
-    lv_obj_set_style_text_font(ui_FreshWaterLabel, &ui_font_rubik_light_18, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_opa(ui_FreshWaterLabel, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_style_label(ui_FreshWaterLabel, "Fresh water sensor", 0, 0);
 
     // ui_FreshWaterTopic
-
     ui_FreshWaterTopic = lv_textarea_create(ui_FreshWaterLevel);
-
-    lv_obj_set_height(ui_FreshWaterTopic, 25);
-    lv_obj_set_width(ui_FreshWaterTopic, lv_pct(80));
-
-    lv_obj_set_x(ui_FreshWaterTopic, 0);
-    lv_obj_set_y(ui_FreshWaterTopic, 0);
-
-    lv_obj_set_align(ui_FreshWaterTopic, LV_ALIGN_BOTTOM_RIGHT);
-
-    lv_textarea_set_text(ui_FreshWaterTopic, "");
+    ui_style_position(ui_FreshWaterTopic, 0, 0, 25, lv_pct(80), LV_ALIGN_BOTTOM_RIGHT);
+    ui_style_textarea(ui_FreshWaterTopic);
     lv_textarea_set_placeholder_text(ui_FreshWaterTopic, "identifier / mqtt topic");
-    lv_textarea_set_one_line(ui_FreshWaterTopic, true);
-
-    lv_obj_clear_flag(ui_FreshWaterTopic, LV_OBJ_FLAG_SCROLLABLE);
-
-    lv_obj_add_event_cb(ui_FreshWaterTopic, ui_event_activateKeyboard, LV_EVENT_FOCUSED, NULL);
-    lv_obj_set_style_text_font(ui_FreshWaterTopic, &ui_font_rubik_light_18, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(ui_FreshWaterTopic, lv_color_hex(0x141414), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_FreshWaterTopic, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_opa(ui_FreshWaterTopic, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_left(ui_FreshWaterTopic, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_right(ui_FreshWaterTopic, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_top(ui_FreshWaterTopic, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(ui_FreshWaterTopic, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     // ui_GreyWaterLevel
-
     ui_GreyWaterLevel = lv_obj_create(ui_Settings);
+    ui_style_group(ui_GreyWaterLevel);
+    ui_style_position(ui_GreyWaterLevel, 50, 290, 50, 302, LV_ALIGN_TOP_LEFT);
 
-    lv_obj_set_width(ui_GreyWaterLevel, 302);
-    lv_obj_set_height(ui_GreyWaterLevel, 50);
-
-    lv_obj_set_x(ui_GreyWaterLevel, 50);
-    lv_obj_set_y(ui_GreyWaterLevel, 260);
-
-    lv_obj_clear_flag(ui_GreyWaterLevel, LV_OBJ_FLAG_SCROLLABLE);
-
-    lv_obj_set_style_opa(ui_GreyWaterLevel, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_left(ui_GreyWaterLevel, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_right(ui_GreyWaterLevel, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_top(ui_GreyWaterLevel, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(ui_GreyWaterLevel, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    // ui_EnableGrayWater
-
-    ui_EnableGrayWater = lv_switch_create(ui_GreyWaterLevel);
-
-    lv_obj_set_width(ui_EnableGrayWater, 50);
-    lv_obj_set_height(ui_EnableGrayWater, 25);
-
-    lv_obj_set_x(ui_EnableGrayWater, 0);
-    lv_obj_set_y(ui_EnableGrayWater, 0);
-
-    lv_obj_set_align(ui_EnableGrayWater, LV_ALIGN_BOTTOM_LEFT);
-
-    lv_obj_set_style_opa(ui_EnableGrayWater, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    lv_obj_set_style_bg_color(ui_EnableGrayWater, lv_color_hex(0x141414), LV_PART_INDICATOR | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_EnableGrayWater, 255, LV_PART_INDICATOR | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(ui_EnableGrayWater, lv_color_hex(0x00A099), LV_PART_INDICATOR | LV_STATE_CHECKED);
-    lv_obj_set_style_bg_opa(ui_EnableGrayWater, 255, LV_PART_INDICATOR | LV_STATE_CHECKED);
+    // ui_EnableGreyWater
+    ui_EnableGreyWater = lv_switch_create(ui_GreyWaterLevel);
+    ui_style_position(ui_EnableGreyWater, 0, 0, 25, 50, LV_ALIGN_BOTTOM_LEFT);
+    ui_style_switch(ui_EnableGreyWater);
 
     // ui_GreyWaterLabel
-
     ui_GreyWaterLabel = lv_label_create(ui_GreyWaterLevel);
-
-    lv_obj_set_width(ui_GreyWaterLabel, LV_SIZE_CONTENT);
-    lv_obj_set_height(ui_GreyWaterLabel, LV_SIZE_CONTENT);
-
-    lv_obj_set_x(ui_GreyWaterLabel, 0);
-    lv_obj_set_y(ui_GreyWaterLabel, 0);
-
-    lv_label_set_text(ui_GreyWaterLabel, "Grey water sensor");
-
-    lv_obj_set_style_text_font(ui_GreyWaterLabel, &ui_font_rubik_light_18, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_opa(ui_GreyWaterLabel, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_style_label(ui_GreyWaterLabel, "Grey water sensor", 0, 0);
 
     // ui_GreyWaterTopic
-
     ui_GreyWaterTopic = lv_textarea_create(ui_GreyWaterLevel);
-
-    lv_obj_set_height(ui_GreyWaterTopic, 25);
-    lv_obj_set_width(ui_GreyWaterTopic, lv_pct(80));
-
-    lv_obj_set_x(ui_GreyWaterTopic, 0);
-    lv_obj_set_y(ui_GreyWaterTopic, 0);
-
-    lv_obj_set_align(ui_GreyWaterTopic, LV_ALIGN_BOTTOM_RIGHT);
-
-    lv_textarea_set_text(ui_GreyWaterTopic, "");
+    ui_style_position(ui_GreyWaterTopic, 0, 0, 25, lv_pct(80), LV_ALIGN_BOTTOM_RIGHT);
+    ui_style_textarea(ui_GreyWaterTopic);
     lv_textarea_set_placeholder_text(ui_GreyWaterTopic, "identifier / mqtt topic");
-    lv_textarea_set_one_line(ui_GreyWaterTopic, true);
 
-    lv_obj_clear_flag(ui_GreyWaterTopic, LV_OBJ_FLAG_SCROLLABLE);
-
-    lv_obj_add_event_cb(ui_GreyWaterTopic, ui_event_activateKeyboard, LV_EVENT_FOCUSED, NULL);
-    lv_obj_set_style_text_font(ui_GreyWaterTopic, &ui_font_rubik_light_18, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(ui_GreyWaterTopic, lv_color_hex(0x141414), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_GreyWaterTopic, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_opa(ui_GreyWaterTopic, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_left(ui_GreyWaterTopic, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_right(ui_GreyWaterTopic, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_top(ui_GreyWaterTopic, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_bottom(ui_GreyWaterTopic, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    // POST CALLS
+    // Activate the keyboard in the first input field
     lv_keyboard_set_textarea(ui_Keyboard, ui_MqttHost);
-
 }
 
 void ui_init(void)

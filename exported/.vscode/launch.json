@@ -9,7 +9,7 @@
         "program": "${command:cmake.launchTargetPath}",
         "args": [],
         "stopAtEntry": false,
-        "cwd": "${fileDirname}",
+        "cwd": "${workspaceFolder}",
         "environment": [],
         "console": "integratedTerminal",
         "MIMode": "gdb",

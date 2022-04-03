@@ -6,13 +6,19 @@ using namespace std;
 
 const char* config_filename = "config.json";
 struct config_t {
+  bool mqtt_enabled;
   string mqtt_hostname;
   string mqtt_port;
   string mqtt_topic;
   string mqtt_user;
   string mqtt_pass;
+  bool freshwater_enabled;
+  string freshwater_topic;
+  bool greywater_enabled;
+  string greywater_topic;
 };
-void load_configuration(const char *filename, config_t &config);
+void load_configuration();
+bool save_configuration();
 
 void display_update_clock(lv_timer_t *timer);
 void mqtt_sync_wrapper(lv_timer_t * timer);

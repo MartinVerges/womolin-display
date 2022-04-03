@@ -1,6 +1,7 @@
 squareline/cache/*
 squareline/backup/*
 exported/build/*
+exported/rv-gui
 
 exported/squareline_generator/*
 

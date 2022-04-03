@@ -74,3 +74,7 @@ def FILL_MQTT_GREYWATER(event_struct):
 def PREFILL_SETTINGS(event_struct):
     return
 
+
+def AppendKeyboardToField(event_struct):
+    return
+
