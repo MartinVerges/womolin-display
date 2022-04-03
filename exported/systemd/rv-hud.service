@@ -9,7 +9,7 @@ Restart=always
 RestartSec=1
 User=root
 ExecStartPre=/bin/sh -c '/usr/bin/chvt 7 && echo 0 > /sys/class/graphics/fbcon/cursor_blink'
-ExecStart=/usr/lib/rv-hud/bin/rv-hud
+ExecStart=/usr/lib/rv-hud/bin/rv-gui
 
 [Install]
 WantedBy=multi-user.target

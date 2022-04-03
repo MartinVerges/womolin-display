@@ -178,7 +178,7 @@ void hal_init_raspberry(void) {
   /* Initialize and register a display driver */
   lv_disp_draw_buf_init(&disp_draw_buf, buf, NULL, DISP_HOR_RES * DISP_VER_RES);
   lv_disp_drv_init(&disp_drv);
-  disp_drv.draw_buf   = &disp_buf;
+  disp_drv.draw_buf   = &disp_draw_buf;
   disp_drv.flush_cb   = fbdev_flush;
   disp_drv.hor_res    = DISP_HOR_RES;
   disp_drv.ver_res    = DISP_VER_RES;
