@@ -38,7 +38,6 @@ lv_obj_t * ui_Settings;
 lv_obj_t * ui_ButtonSettingsClose;
 lv_obj_t * ui_Keyboard;
 lv_obj_t * ui_MqttConnection;
-lv_obj_t * ui_MqttEnabled;
 lv_obj_t * ui_MqttServerLabel;
 lv_obj_t * ui_MqttHost;
 lv_obj_t * ui_MqttPort;
@@ -844,11 +843,6 @@ void ui_Settings_screen_init(void) {
     ui_MqttConnection = lv_obj_create(ui_Settings);
     ui_style_group(ui_MqttConnection);
     ui_style_position(ui_MqttConnection, 50, 50, 165, 302, LV_ALIGN_TOP_LEFT);
-
-    // ui_MqttEnabled
-    ui_MqttEnabled = lv_switch_create(ui_MqttConnection);
-    ui_style_position(ui_MqttEnabled, 0, 25, 25, 50, LV_ALIGN_TOP_LEFT);
-    ui_style_switch(ui_MqttEnabled);
 
     // ui_MqttServerLabel
     ui_MqttServerLabel = lv_label_create(ui_MqttConnection);

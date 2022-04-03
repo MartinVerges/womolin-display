@@ -42,7 +42,7 @@ using namespace std;
 
 // MQTT-c
 struct mqtt_client mqtt;
-struct mqtt_reconnect_state_t mqtt_state;
+struct mqtt_buffer_t mqtt_state;
 static lv_timer_t * timer_mqtt_sync;
 
 // LVGL
@@ -76,7 +76,14 @@ int main(int argc, char **argv) {
 
   ui_init();
 
-  mqtt_prepare(&mqtt, configuration);
+  // Allways allocate the memory on startup. We will never free it up again!
+  int bufsize = 2048;
+  mqtt_state.sendbuf = (uint8_t*)malloc(bufsize);
+  mqtt_state.sendbufsz = bufsize;
+  mqtt_state.recvbuf = (uint8_t*)malloc(bufsize);
+  mqtt_state.recvbufsz = bufsize;
+  cout << "[MQTT] Connecting to " << configuration.mqtt_hostname << ":" << configuration.mqtt_port << endl;
+  mqtt_init_reconnect(&mqtt, mqtt_reconnect_client, &mqtt_state, mqtt_publish_callback);
 
   // Update the clock
   timer_upd_clock = lv_timer_create(display_update_clock, 500, NULL);
@@ -96,10 +103,8 @@ bool save_configuration() {
   std::fstream fs;
   fs.open (config_filename, std::fstream::out | std::fstream::trunc);
   StaticJsonDocument<4096> doc;
-  doc["mqtt_enabled"] = configuration.mqtt_enabled;
   doc["mqtt_hostname"] = configuration.mqtt_hostname;
   doc["mqtt_port"] = configuration.mqtt_port;
-  doc["mqtt_topic"] = configuration.mqtt_topic;
   doc["mqtt_user"] = configuration.mqtt_user;
   doc["mqtt_pass"] = configuration.mqtt_pass;
   doc["freshwater_enabled"] = configuration.freshwater_enabled;
@@ -125,24 +130,14 @@ void load_configuration() {
   if (error) {
     perror("Failed to read file, using default configuration");
   }
-  configuration.mqtt_enabled = doc["mqtt_enabled"] | false;
   configuration.mqtt_hostname =  doc["mqtt_hostname"] | "localhost";
   configuration.mqtt_port = doc["mqtt_port"] | "1883";
-  configuration.mqtt_topic = doc["mqtt_topic"] | "test";
   configuration.mqtt_user = doc["mqtt_user"] | "";
   configuration.mqtt_pass = doc["mqtt_pass"] | "";
   configuration.freshwater_enabled = doc["freshwater_enabled"] | false;
   configuration.freshwater_topic = doc["freshwater_topic"] | "freshwater/tanklevel";
   configuration.greywater_enabled = doc["greywater_enabled"] | false;
   configuration.greywater_topic = doc["greywater_topic"] | "greywater/tanklevel";
-
-  /*
-  cout << "MQTT Hostname = " << config.mqtt_hostname << endl;
-  cout << "MQTT Port     = " << config.mqtt_port << endl;
-  cout << "MQTT Topic    = " << config.mqtt_topic << endl;
-  cout << "MQTT Username = " << config.mqtt_user << endl;
-  cout << "MQTT Password = " << config.mqtt_pass << endl;
-  */
   fs.close();
 }
 
@@ -201,7 +196,7 @@ void display_update_clock(lv_timer_t *timer) {
         struct tm tm;
 	tm = *localtime(&t);
 	lv_label_set_text_fmt(ui_TimeIndicator, "%02d:%02d:%02d", tm.tm_hour, tm.tm_min, tm.tm_sec);
-	lv_label_set_text_fmt(ui_DateIndicator, "%02d-%02d-%04d", tm.tm_mday, tm.tm_mon+1, tm.tm_year+1900);
+	lv_label_set_text_fmt(ui_DateIndicator, "%02d.%02d.%04d", tm.tm_mday, tm.tm_mon+1, tm.tm_year+1900);
 }
 
 /*********************
@@ -211,31 +206,19 @@ void mqtt_sync_wrapper(lv_timer_t * timer) {
   mqtt_sync(static_cast<mqtt_client*>(timer->user_data));
 }
 
-void mqtt_prepare(struct mqtt_client* client, config_t &config) {
-  int bufsize = 2048;
-  mqtt_state.client_id = "mydisplay";
-  mqtt_state.hostname = config.mqtt_hostname.c_str();
-  mqtt_state.port = config.mqtt_port.c_str();
-  mqtt_state.user = config.mqtt_user.c_str();
-  mqtt_state.pass = config.mqtt_pass.c_str();
-  mqtt_state.sendbuf = (uint8_t*)malloc(bufsize);
-  mqtt_state.sendbufsz = bufsize;
-  mqtt_state.recvbuf = (uint8_t*)malloc(bufsize);
-  mqtt_state.recvbufsz = bufsize;
-
-  printf("[MQTT] Connecting to %s:%s\n", mqtt_state.hostname, mqtt_state.port);
-  mqtt_init_reconnect(client, mqtt_reconnect_client, &mqtt_state, mqtt_publish_callback);
+void mqtt_force_reconnect() {
+  mqtt.error = MQTT_ERROR_CONNECTION_CLOSED;
 }
 
 void mqtt_reconnect_client(struct mqtt_client* client, void **reconnect_state_vptr) {
-  struct mqtt_reconnect_state_t *reconnect_state = *((struct mqtt_reconnect_state_t**) reconnect_state_vptr);
+  struct mqtt_buffer_t *reconnect_state = *((struct mqtt_buffer_t**) reconnect_state_vptr);
 
   if (client->error != MQTT_ERROR_INITIAL_RECONNECT) {
     close(client->socketfd);
     printf("reconnect_client: called while client was in error state \"%s\"\n", mqtt_error_str(client->error));
   }
 
-  int sockfd = open_nb_socket(reconnect_state->hostname, reconnect_state->port);
+  int sockfd = open_nb_socket(configuration.mqtt_hostname.c_str(), configuration.mqtt_port.c_str());
   if (sockfd == -1) return perror("Failed to open socket!");
 
   // Reinitialize the client.
@@ -244,7 +227,7 @@ void mqtt_reconnect_client(struct mqtt_client* client, void **reconnect_state_vp
               reconnect_state->recvbuf, reconnect_state->recvbufsz
   );
   uint8_t connect_flags = MQTT_CONNECT_CLEAN_SESSION;
-  mqtt_connect(client, reconnect_state->client_id, NULL, NULL, 0, reconnect_state->user, reconnect_state->pass, connect_flags, 400);
+  mqtt_connect(client, "mydisplay", NULL, NULL, 0, configuration.mqtt_user.c_str(), configuration.mqtt_pass.c_str(), connect_flags, 400);
     
   if (configuration.freshwater_enabled) mqtt_subscribe(client, configuration.freshwater_topic.c_str(), 0);
   if (configuration.greywater_enabled) mqtt_subscribe(client, configuration.greywater_topic.c_str(), 0);
@@ -337,8 +320,6 @@ void ONCLICK_NAV_5(lv_event_t * e) {
  
 void PREFILL_SETTINGS(lv_event_t * e) {
 	(void)e;
-
-  switch_state(ui_MqttEnabled, configuration.mqtt_enabled);
 	lv_textarea_set_text(ui_MqttHost, configuration.mqtt_hostname.c_str());
 	lv_textarea_set_text(ui_MqttPort, configuration.mqtt_port.c_str());
 	lv_textarea_set_text(ui_MqttUsername, configuration.mqtt_user.c_str());
@@ -352,24 +333,32 @@ void PREFILL_SETTINGS(lv_event_t * e) {
 }
 
 void CLOSE_SETTINGS(lv_event_t * e) {
-  configuration.mqtt_enabled = lv_obj_has_state(ui_MqttEnabled, LV_STATE_CHECKED);
   configuration.mqtt_hostname = lv_textarea_get_text(ui_MqttHost);
   configuration.mqtt_port = lv_textarea_get_text(ui_MqttPort);
   configuration.mqtt_user = lv_textarea_get_text(ui_MqttUsername);
   configuration.mqtt_pass = lv_textarea_get_text(ui_MqttPassword);
-  configuration.mqtt_topic = lv_textarea_get_text(ui_FreshWaterTopic);
 
   configuration.freshwater_enabled = lv_obj_has_state(ui_EnableFreshWater, LV_STATE_CHECKED);
   configuration.freshwater_topic = lv_textarea_get_text(ui_FreshWaterTopic);
+  if (configuration.freshwater_enabled) lv_obj_clear_flag(ui_LevelInfo1, LV_OBJ_FLAG_HIDDEN);
 
   configuration.greywater_enabled = lv_obj_has_state(ui_EnableGreyWater, LV_STATE_CHECKED);
   configuration.greywater_topic = lv_textarea_get_text(ui_GreyWaterTopic);
+  if (configuration.greywater_enabled) lv_obj_clear_flag(ui_LevelInfo2, LV_OBJ_FLAG_HIDDEN);
+
   save_configuration();
+  mqtt_force_reconnect();
 }
 
 void LOADSCREEN(lv_event_t * e) {
 	(void)e;
 	NAV_BTTN_ENABLE(ui_NavButton2, ui_NavIcon2);
+  if (!configuration.freshwater_enabled) {  // hide
+    lv_obj_add_flag(ui_LevelInfo1, LV_OBJ_FLAG_HIDDEN);
+  }
+  if (!configuration.greywater_enabled) {  // hide
+    lv_obj_add_flag(ui_LevelInfo2, LV_OBJ_FLAG_HIDDEN);
+  }
 }
 
 /*void NAV_BTTN_ACTIVE() {

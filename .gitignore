@@ -4,8 +4,8 @@ build/**/*
 _deps/*
 CMakeFiles/*
 
-lv_conf.h
-lv_drv_conf.h
+squareline_gui_generator/cache/
+squareline_gui_generator/generated/
 
 # Compiled Object files
 **/.DS_Store
