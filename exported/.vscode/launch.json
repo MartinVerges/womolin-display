@@ -11,7 +11,7 @@
         "stopAtEntry": false,
         "cwd": "${fileDirname}",
         "environment": [],
-        "externalConsole": false,
+        "console": "integratedTerminal",
         "MIMode": "gdb",
         "setupCommands": [
             {

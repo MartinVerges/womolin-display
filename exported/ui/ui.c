@@ -71,7 +71,6 @@ lv_obj_t * ui_GreyWaterTopic;
 static void ui_event_MainScreen(lv_event_t * e)
 {
     lv_event_code_t event = lv_event_get_code(e);
-    lv_obj_t * ta = lv_event_get_target(e);
     if(event == LV_EVENT_SCREEN_LOADED) {
         LOADSCREEN(e);
     }
@@ -79,7 +78,6 @@ static void ui_event_MainScreen(lv_event_t * e)
 static void ui_event_ButtonSettingsOpen(lv_event_t * e)
 {
     lv_event_code_t event = lv_event_get_code(e);
-    lv_obj_t * ta = lv_event_get_target(e);
     if(event == LV_EVENT_CLICKED) {
         _ui_screen_change(ui_Settings, LV_SCR_LOAD_ANIM_FADE_ON, 0, 0);
     }
@@ -87,7 +85,6 @@ static void ui_event_ButtonSettingsOpen(lv_event_t * e)
 static void ui_event_NavButton1(lv_event_t * e)
 {
     lv_event_code_t event = lv_event_get_code(e);
-    lv_obj_t * ta = lv_event_get_target(e);
     if(event == LV_EVENT_CLICKED) {
         ONCLICK_NAV_1(e);
     }
@@ -95,7 +92,6 @@ static void ui_event_NavButton1(lv_event_t * e)
 static void ui_event_NavButton2(lv_event_t * e)
 {
     lv_event_code_t event = lv_event_get_code(e);
-    lv_obj_t * ta = lv_event_get_target(e);
     if(event == LV_EVENT_CLICKED) {
         ONCLICK_NAV_2(e);
     }
@@ -103,7 +99,6 @@ static void ui_event_NavButton2(lv_event_t * e)
 static void ui_event_NavButton3(lv_event_t * e)
 {
     lv_event_code_t event = lv_event_get_code(e);
-    lv_obj_t * ta = lv_event_get_target(e);
     if(event == LV_EVENT_CLICKED) {
         ONCLICK_NAV_3(e);
     }
@@ -111,7 +106,6 @@ static void ui_event_NavButton3(lv_event_t * e)
 static void ui_event_NavButton4(lv_event_t * e)
 {
     lv_event_code_t event = lv_event_get_code(e);
-    lv_obj_t * ta = lv_event_get_target(e);
     if(event == LV_EVENT_CLICKED) {
         ONCLICK_NAV_4(e);
     }
@@ -119,7 +113,6 @@ static void ui_event_NavButton4(lv_event_t * e)
 static void ui_event_NavButton5(lv_event_t * e)
 {
     lv_event_code_t event = lv_event_get_code(e);
-    lv_obj_t * ta = lv_event_get_target(e);
     if(event == LV_EVENT_CLICKED) {
         ONCLICK_NAV_5(e);
     }
@@ -127,7 +120,6 @@ static void ui_event_NavButton5(lv_event_t * e)
 static void ui_event_Settings(lv_event_t * e)
 {
     lv_event_code_t event = lv_event_get_code(e);
-    lv_obj_t * ta = lv_event_get_target(e);
     if(event == LV_EVENT_SCREEN_LOAD_START) {
         PREFILL_SETTINGS(e);
     }
@@ -135,7 +127,6 @@ static void ui_event_Settings(lv_event_t * e)
 static void ui_event_ButtonSettingsClose(lv_event_t * e)
 {
     lv_event_code_t event = lv_event_get_code(e);
-    lv_obj_t * ta = lv_event_get_target(e);
     if(event == LV_EVENT_CLICKED) {
         _ui_screen_change(ui_MainScreen, LV_SCR_LOAD_ANIM_FADE_ON, 0, 0);
     }
@@ -878,9 +869,6 @@ void ui_Settings_screen_init(void)
 
     lv_obj_set_align(ui_MqttHost, LV_ALIGN_TOP_RIGHT);
 
-    if("" == "") lv_textarea_set_accepted_chars(ui_MqttHost, NULL);
-    else lv_textarea_set_accepted_chars(ui_MqttHost, "");
-
     lv_textarea_set_text(ui_MqttHost, "");
     lv_textarea_set_placeholder_text(ui_MqttHost, "IP or Hostname");
     lv_textarea_set_one_line(ui_MqttHost, true);
@@ -908,9 +896,6 @@ void ui_Settings_screen_init(void)
 
     lv_obj_set_align(ui_MqttUsername, LV_ALIGN_TOP_RIGHT);
 
-    if("" == "") lv_textarea_set_accepted_chars(ui_MqttUsername, NULL);
-    else lv_textarea_set_accepted_chars(ui_MqttUsername, "");
-
     lv_textarea_set_text(ui_MqttUsername, "");
     lv_textarea_set_placeholder_text(ui_MqttUsername, "Username");
     lv_textarea_set_one_line(ui_MqttUsername, true);
@@ -937,9 +922,6 @@ void ui_Settings_screen_init(void)
     lv_obj_set_y(ui_MqttPassword, 95);
 
     lv_obj_set_align(ui_MqttPassword, LV_ALIGN_TOP_RIGHT);
-
-    if("" == "") lv_textarea_set_accepted_chars(ui_MqttPassword, NULL);
-    else lv_textarea_set_accepted_chars(ui_MqttPassword, "");
 
     lv_textarea_set_text(ui_MqttPassword, "");
     lv_textarea_set_placeholder_text(ui_MqttPassword, "Password");
@@ -1020,9 +1002,6 @@ void ui_Settings_screen_init(void)
 
     lv_obj_set_align(ui_FreshWaterTopic, LV_ALIGN_BOTTOM_RIGHT);
 
-    if("" == "") lv_textarea_set_accepted_chars(ui_FreshWaterTopic, NULL);
-    else lv_textarea_set_accepted_chars(ui_FreshWaterTopic, "");
-
     lv_textarea_set_text(ui_FreshWaterTopic, "");
     lv_textarea_set_placeholder_text(ui_FreshWaterTopic, "identifier / mqtt topic");
     lv_textarea_set_one_line(ui_FreshWaterTopic, true);
@@ -1101,9 +1080,6 @@ void ui_Settings_screen_init(void)
     lv_obj_set_y(ui_GreyWaterTopic, 0);
 
     lv_obj_set_align(ui_GreyWaterTopic, LV_ALIGN_BOTTOM_RIGHT);
-
-    if("" == "") lv_textarea_set_accepted_chars(ui_GreyWaterTopic, NULL);
-    else lv_textarea_set_accepted_chars(ui_GreyWaterTopic, "");
 
     lv_textarea_set_text(ui_GreyWaterTopic, "");
     lv_textarea_set_placeholder_text(ui_GreyWaterTopic, "identifier / mqtt topic");

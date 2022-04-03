@@ -1,0 +1,7 @@
+{
+    "mqtt_hostname": "192.168.254.91",
+    "mqtt_port": "1883",
+    "mqtt_topic": "freshwater/tanklevel",
+    "mqtt_user": "rv-gui",
+    "mqtt_pass": "abcd1234"
+}

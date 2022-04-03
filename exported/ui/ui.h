@@ -74,23 +74,23 @@ void ONCLICK_NAV_4(lv_event_t * e);
 void ONCLICK_NAV_5(lv_event_t * e);
 void PREFILL_SETTINGS(lv_event_t * e);
 
-LV_IMG_DECLARE(ui_img_bg_car_png);    // assets/bg_car.png
-LV_IMG_DECLARE(ui_img_icon_water_content_clean_png);    // assets/icon_water_content_clean.png
-LV_IMG_DECLARE(ui_img_icon_water_content_dirty_png);    // assets/icon_water_content_dirty.png
-LV_IMG_DECLARE(ui_img_icon_settings_png);    // assets/icon_settings.png
-LV_IMG_DECLARE(ui_img_icon_weather_png);    // assets/icon_weather.png
-LV_IMG_DECLARE(ui_img_icon_water_png);    // assets/icon_water.png
-LV_IMG_DECLARE(ui_img_icon_battery_png);    // assets/icon_battery.png
-LV_IMG_DECLARE(ui_img_icon_gas_png);    // assets/icon_gas.png
-LV_IMG_DECLARE(ui_img_icon_temperature_png);    // assets/icon_temperature.png
-LV_IMG_DECLARE(ui_img_bg_png);    // assets/bg.png
-LV_IMG_DECLARE(ui_img_icon_close_png);    // assets/icon_close.png
+LV_IMG_DECLARE(ui_img_bg_car_png)               // assets/bg_car.png
+LV_IMG_DECLARE(ui_img_icon_water_content_clean_png)    // assets/icon_water_content_clean.png
+LV_IMG_DECLARE(ui_img_icon_water_content_dirty_png)    // assets/icon_water_content_dirty.png
+LV_IMG_DECLARE(ui_img_icon_settings_png)        // assets/icon_settings.png
+LV_IMG_DECLARE(ui_img_icon_weather_png)         // assets/icon_weather.png
+LV_IMG_DECLARE(ui_img_icon_water_png)           // assets/icon_water.png
+LV_IMG_DECLARE(ui_img_icon_battery_png)         // assets/icon_battery.png
+LV_IMG_DECLARE(ui_img_icon_gas_png)             // assets/icon_gas.png
+LV_IMG_DECLARE(ui_img_icon_temperature_png)     // assets/icon_temperature.png
+LV_IMG_DECLARE(ui_img_bg_png)                   // assets/bg.png
+LV_IMG_DECLARE(ui_img_icon_close_png)           // assets/icon_close.png
 
 
-LV_FONT_DECLARE(ui_font_rubik_SemiBold_22);
-LV_FONT_DECLARE(ui_font_rubik_bold_53);
-LV_FONT_DECLARE(ui_font_rubik_light_18);
-LV_FONT_DECLARE(ui_font_rubik_light_40);
+LV_FONT_DECLARE(ui_font_rubik_SemiBold_22)
+LV_FONT_DECLARE(ui_font_rubik_bold_53)
+LV_FONT_DECLARE(ui_font_rubik_light_18)
+LV_FONT_DECLARE(ui_font_rubik_light_40)
 
 
 void ui_init(void);

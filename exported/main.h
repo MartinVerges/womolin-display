@@ -1,6 +1,18 @@
 
 #include <mqtt.h>
 #include <lvgl.h>
+#include <string>
+using namespace std;
+
+const char* config_filename = "config.json";
+struct config_t {
+  string mqtt_hostname;
+  string mqtt_port;
+  string mqtt_topic;
+  string mqtt_user;
+  string mqtt_pass;
+};
+void load_configuration(const char *filename, config_t &config);
 
 void display_update_clock(lv_timer_t *timer);
 void mqtt_sync_wrapper(lv_timer_t * timer);
@@ -8,7 +20,7 @@ void mqtt_sync_wrapper(lv_timer_t * timer);
 void hal_init_simulator(void);
 void hal_init_raspberry(void);
 
-struct reconnect_state_t {
+struct mqtt_reconnect_state_t {
     const char* hostname;
     const char* port;
     const char* topic;
@@ -20,7 +32,6 @@ struct reconnect_state_t {
     uint8_t* recvbuf;
     size_t recvbufsz;
 };
-
-void mqtt_prepare(struct mqtt_client* client);
+void mqtt_prepare(struct mqtt_client* client, config_t &config);
 void mqtt_reconnect_client(struct mqtt_client* client, void **reconnect_state_vptr);
 void mqtt_publish_callback(void** unused, struct mqtt_response_publish *published);

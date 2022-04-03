@@ -24,8 +24,8 @@
 /*********************
  *   ArduinoJson
  *********************/
+#define ARDUINOJSON_ENABLE_STD_STRING 1
 #include <ArduinoJson.h>
-
 
 /*********************
  *   INCLUDES
@@ -33,11 +33,16 @@
 #include <linux/input.h>
 #include <time.h>
 #include <unistd.h>
+#include <fstream>
+#include <string>
+#include <iostream>
 #include "main.h"
+
+using namespace std;
 
 // MQTT-c
 struct mqtt_client mqtt;
-struct reconnect_state_t mqtt_state;
+struct mqtt_reconnect_state_t mqtt_state;
 static lv_timer_t * timer_mqtt_sync;
 
 // LVGL
@@ -50,14 +55,44 @@ static lv_timer_t * timer_upd_clock;
 static lv_indev_t * indev_touchpad;
 #endif
 
+// Generic
+config_t configuration;
+
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
+void load_configuration(const char *filename, config_t &config) {
+  std::fstream fs;
+  fs.open (filename, std::fstream::in);
+
+  StaticJsonDocument<4096> doc;
+  DeserializationError error = deserializeJson(doc, fs);
+  if (error) {
+    perror("Failed to read file, using default configuration");
+  } 
+  config.mqtt_hostname =  doc["mqtt_hostname"] | "localhost";
+  config.mqtt_port = doc["mqtt_port"] | "1883";
+  config.mqtt_topic = doc["mqtt_topic"] | "test";
+  config.mqtt_user = doc["mqtt_user"] | "";
+  config.mqtt_pass = doc["mqtt_pass"] | "";
+  /*
+  cout << "MQTT Hostname = " << config.mqtt_hostname << endl;
+  cout << "MQTT Port     = " << config.mqtt_port << endl;
+  cout << "MQTT Topic    = " << config.mqtt_topic << endl;
+  cout << "MQTT Username = " << config.mqtt_user << endl;
+  cout << "MQTT Password = " << config.mqtt_pass << endl;
+  */
+  fs.close();
+}
+
 int main(int argc, char **argv) {
   (void)argc; /* Unused */
   (void)argv; /* Unused */
 
-  /* Initialize LVGL */
+  // Load last known configuration
+  load_configuration(config_filename, configuration);
+
+  // Initialize LVGL
   lv_init();
 
   hal_init_simulator();
@@ -65,7 +100,7 @@ int main(int argc, char **argv) {
 
   ui_init();
 
-  mqtt_prepare(&mqtt);
+  mqtt_prepare(&mqtt, configuration);
 
   // Update the clock
   timer_upd_clock = lv_timer_create(display_update_clock, 500, NULL);
@@ -144,14 +179,14 @@ void display_update_clock(lv_timer_t *timer) {
 }
 
 
-void mqtt_prepare(struct mqtt_client* client) {
+void mqtt_prepare(struct mqtt_client* client, config_t &config) {
   int bufsize = 2048;
   mqtt_state.client_id = "mydisplay";
-  mqtt_state.hostname = "192.168.254.91";
-  mqtt_state.port = "1883";
-  mqtt_state.topic = "freshwater/tanklevel";
-  mqtt_state.user = "rv-gui";
-  mqtt_state.pass = "abcd1234";
+  mqtt_state.hostname = config.mqtt_hostname.c_str();
+  mqtt_state.port = config.mqtt_port.c_str();
+  mqtt_state.topic = config.mqtt_topic.c_str();
+  mqtt_state.user = config.mqtt_user.c_str();
+  mqtt_state.pass = config.mqtt_pass.c_str();
   mqtt_state.sendbuf = (uint8_t*)malloc(bufsize);
   mqtt_state.sendbufsz = bufsize;
   mqtt_state.recvbuf = (uint8_t*)malloc(bufsize);
@@ -162,11 +197,17 @@ void mqtt_prepare(struct mqtt_client* client) {
 }
 
 void mqtt_reconnect_client(struct mqtt_client* client, void **reconnect_state_vptr) {
-  struct reconnect_state_t *reconnect_state = *((struct reconnect_state_t**) reconnect_state_vptr);
+  struct mqtt_reconnect_state_t *reconnect_state = *((struct mqtt_reconnect_state_t**) reconnect_state_vptr);
 
   if (client->error != MQTT_ERROR_INITIAL_RECONNECT) {
     close(client->socketfd);
     printf("reconnect_client: called while client was in error state \"%s\"\n", mqtt_error_str(client->error));
+
+      cout << "MQTT Hostname = " << configuration.mqtt_hostname << endl;
+      cout << "MQTT Port     = " << configuration.mqtt_port << endl;
+      cout << "MQTT Topic    = " << configuration.mqtt_topic << endl;
+      cout << "MQTT Username = " << configuration.mqtt_user << endl;
+      cout << "MQTT Password = " << configuration.mqtt_pass << endl;
   }
 
   int sockfd = open_nb_socket(reconnect_state->hostname, reconnect_state->port);
@@ -193,6 +234,16 @@ void mqtt_publish_callback(void** unused, struct mqtt_response_publish *publishe
   application_message[published->application_message_size] = '\0';
  
   printf("Received publish('%s'): %s\n", topic_name, application_message);
+  if (strcmp(topic_name, "freshwater/tanklevel") == 0) {
+    lv_bar_set_value(ui_Level1, atoi(application_message), LV_ANIM_ON);
+    lv_label_set_text_fmt(ui_Level1State, "%d%%", atoi(application_message));
+  }
+  printf("Received publish('%s'): %s\n", topic_name, application_message);
+  if (strcmp(topic_name, "greywater/tanklevel") == 0) {
+    lv_bar_set_value(ui_Level2, atoi(application_message), LV_ANIM_ON);
+    lv_label_set_text_fmt(ui_Level2State, "%d%%", atoi(application_message));
+  }
+
   free(topic_name);
   free(application_message);
 }

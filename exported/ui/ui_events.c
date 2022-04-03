@@ -33,6 +33,7 @@ void NAV_BTTN_DISABLE(struct _lv_obj_t * bttn, struct _lv_obj_t * icon) {
 }*/
 
 void LOADSCREEN(lv_event_t * e) {
+	(void)e;
 	NAV_BTTN_ENABLE(ui_NavButton2, ui_NavIcon2);
 
 	lv_bar_set_value(ui_Level1, 50, LV_ANIM_OFF);
@@ -43,6 +44,7 @@ void LOADSCREEN(lv_event_t * e) {
 }
 
 void ONCLICK_NAV_1(lv_event_t * e) {
+	(void)e;
 	NAV_BTTN_ENABLE(ui_NavButton1, ui_NavIcon1);
 	NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
 	NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
@@ -51,6 +53,7 @@ void ONCLICK_NAV_1(lv_event_t * e) {
 }
 
 void ONCLICK_NAV_2(lv_event_t * e) {
+	(void)e;
 	NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
 	NAV_BTTN_ENABLE(ui_NavButton2, ui_NavIcon2);
 	NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
@@ -59,6 +62,7 @@ void ONCLICK_NAV_2(lv_event_t * e) {
 }
 
 void ONCLICK_NAV_3(lv_event_t * e) {
+	(void)e;
 	NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
 	NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
 	NAV_BTTN_ENABLE(ui_NavButton3, ui_NavIcon3);
@@ -67,6 +71,7 @@ void ONCLICK_NAV_3(lv_event_t * e) {
 }
 
 void ONCLICK_NAV_4(lv_event_t * e) {
+	(void)e;
 	NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
 	NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
 	NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
@@ -74,6 +79,7 @@ void ONCLICK_NAV_4(lv_event_t * e) {
 	NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
 }
 void ONCLICK_NAV_5(lv_event_t * e) {
+	(void)e;
 	NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
 	NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
 	NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
@@ -82,6 +88,7 @@ void ONCLICK_NAV_5(lv_event_t * e) {
 }
  
 void PREFILL_SETTINGS(lv_event_t * e) {
+	(void)e;
 	lv_obj_add_state(ui_MqttEnabled, LV_STATE_CHECKED);
 	lv_textarea_set_text(ui_MqttHost, "1.2.3.4");
 	lv_textarea_set_text(ui_MqttUsername, "admin");

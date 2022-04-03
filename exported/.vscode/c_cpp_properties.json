@@ -4,6 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${default}",
+                "/usr/include",
                 "${workspaceFolder}",
                 "${workspaceFolder}/libs/",
                 "${workspaceFolder}/libs/lv_drivers",
