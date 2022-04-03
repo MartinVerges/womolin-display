@@ -6,12 +6,20 @@
  *   LVGL
  *********************/
 #define _DEFAULT_SOURCE   // needed for usleep()
+#include "lv_conf.h"
+#include "lv_drv_conf.h"
+#include <lvgl.h>
+#if USE_SDL
 #define SDL_MAIN_HANDLED  // To fix SDL's "undefined reference to WinMain" issue
 #include <SDL2/SDL.h>
-#include <lvgl.h>
 #include <sdl/sdl.h>
+#endif
+#if USE_FBDEV
 #include <display/fbdev.h>
+#endif
+#if USE_EVDEV
 #include <indev/evdev.h>
+#endif
 #include "ui/ui.h"
 
 /*********************

@@ -1,5 +1,5 @@
 {
-  "mqtt_hostname": "192.168.254.91",
+  "mqtt_hostname": "192.168.254.63",
   "mqtt_port": "1883",
   "mqtt_user": "rv-gui",
   "mqtt_pass": "abcd1234",

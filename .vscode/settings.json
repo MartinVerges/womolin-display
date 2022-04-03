@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "*.simulator": "c"
+        "*.simulator": "c",
+        "*.raspberry": "cpp"
     }
 }

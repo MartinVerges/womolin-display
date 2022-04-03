@@ -4,6 +4,9 @@ build/**/*
 _deps/*
 CMakeFiles/*
 
+rv-gui
+bin/**
+
 squareline_gui_generator/cache/
 squareline_gui_generator/generated/
 
