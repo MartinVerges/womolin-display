@@ -6,7 +6,25 @@ The whole thing will work together with WOMO\_LIN to ensure the greatest possibl
 
 ## Current State
 
-Currently, the design is being developed and implemented. As soon as this is completed, the necessary functions will be added.
+It's a working prototype.
+After installation, it will start and show the Tank status.
+The status itself comes from a MQTT Server that you need to provide or install on the RPI.
+
+You can change and modify the settings comfortably from the GUI itself by accessing the settings dialog.
+
+## Used Hardware
+
+I used my [wifi-hotspot](https://github.com/MartinVerges/wifi-HotSpot/) Raspberry Pi for the GUI.
+
+- Raspberry PI (I use the [4B with 8GB variant](https://www.amazon.de/gp/product/B0899VXM8F))
+- SD card (e.g. [SanDisk Extreme Pro 64GB](https://www.amazon.de/gp/product/B07G3GMRYF))
+- Display (e.g. [Waveshare 7inch 1024x600 DSI IPS Touch](https://www.amazon.de/gp/product/B09QHYKY5R)
+
+Please note: at the current state, this Project only works on 1024x600 pixel and provides no other configurations.
+
+## Installation
+
+If you want to give it a try, take a look at the [INSTALL.md](https://github.com/MartinVerges/rv-hud/blob/main/INSTALL.md) documentation.
 
 ## Screenshots
 
