@@ -761,6 +761,16 @@ void ui_MainScreen_screen_init(void)
                       LV_OBJ_FLAG_SCROLL_CHAIN);
 
 }
+
+static void ui_event_activateKeyboard(lv_event_t * e)
+{
+    lv_event_code_t event = lv_event_get_code(e);
+    lv_obj_t * ta = lv_event_get_target(e);
+    if(event == LV_EVENT_FOCUSED) {
+        lv_keyboard_set_textarea(ui_Keyboard, ta);
+    }
+}
+
 void ui_Settings_screen_init(void)
 {
 
@@ -875,6 +885,7 @@ void ui_Settings_screen_init(void)
 
     lv_obj_clear_flag(ui_MqttHost, LV_OBJ_FLAG_SCROLLABLE);
 
+    lv_obj_add_event_cb(ui_MqttHost, ui_event_activateKeyboard, LV_EVENT_FOCUSED, NULL);
     lv_obj_set_style_text_font(ui_MqttHost, &ui_font_rubik_light_18, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(ui_MqttHost, lv_color_hex(0x141414), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_MqttHost, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -902,6 +913,7 @@ void ui_Settings_screen_init(void)
 
     lv_obj_clear_flag(ui_MqttUsername, LV_OBJ_FLAG_SCROLLABLE);
 
+    lv_obj_add_event_cb(ui_MqttUsername, ui_event_activateKeyboard, LV_EVENT_FOCUSED, NULL);
     lv_obj_set_style_text_font(ui_MqttUsername, &ui_font_rubik_light_18, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(ui_MqttUsername, lv_color_hex(0x141414), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_MqttUsername, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -929,6 +941,7 @@ void ui_Settings_screen_init(void)
 
     lv_obj_clear_flag(ui_MqttPassword, LV_OBJ_FLAG_SCROLLABLE);
 
+    lv_obj_add_event_cb(ui_MqttPassword, ui_event_activateKeyboard, LV_EVENT_FOCUSED, NULL);
     lv_obj_set_style_text_font(ui_MqttPassword, &ui_font_rubik_light_18, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(ui_MqttPassword, lv_color_hex(0x141414), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_MqttPassword, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -1008,6 +1021,7 @@ void ui_Settings_screen_init(void)
 
     lv_obj_clear_flag(ui_FreshWaterTopic, LV_OBJ_FLAG_SCROLLABLE);
 
+    lv_obj_add_event_cb(ui_FreshWaterTopic, ui_event_activateKeyboard, LV_EVENT_FOCUSED, NULL);
     lv_obj_set_style_text_font(ui_FreshWaterTopic, &ui_font_rubik_light_18, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(ui_FreshWaterTopic, lv_color_hex(0x141414), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_FreshWaterTopic, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -1087,6 +1101,7 @@ void ui_Settings_screen_init(void)
 
     lv_obj_clear_flag(ui_GreyWaterTopic, LV_OBJ_FLAG_SCROLLABLE);
 
+    lv_obj_add_event_cb(ui_GreyWaterTopic, ui_event_activateKeyboard, LV_EVENT_FOCUSED, NULL);
     lv_obj_set_style_text_font(ui_GreyWaterTopic, &ui_font_rubik_light_18, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(ui_GreyWaterTopic, lv_color_hex(0x141414), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_GreyWaterTopic, 255, LV_PART_MAIN | LV_STATE_DEFAULT);

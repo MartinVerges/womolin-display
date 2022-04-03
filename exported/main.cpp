@@ -202,12 +202,6 @@ void mqtt_reconnect_client(struct mqtt_client* client, void **reconnect_state_vp
   if (client->error != MQTT_ERROR_INITIAL_RECONNECT) {
     close(client->socketfd);
     printf("reconnect_client: called while client was in error state \"%s\"\n", mqtt_error_str(client->error));
-
-      cout << "MQTT Hostname = " << configuration.mqtt_hostname << endl;
-      cout << "MQTT Port     = " << configuration.mqtt_port << endl;
-      cout << "MQTT Topic    = " << configuration.mqtt_topic << endl;
-      cout << "MQTT Username = " << configuration.mqtt_user << endl;
-      cout << "MQTT Password = " << configuration.mqtt_pass << endl;
   }
 
   int sockfd = open_nb_socket(reconnect_state->hostname, reconnect_state->port);

@@ -2,6 +2,8 @@ squareline/cache/*
 squareline/backup/*
 exported/build/*
 
+exported/squareline_generator/*
+
 # Symlinks to simulator / rpi
 exported/lv_conf.h
 exported/lv_drv_conf.h
