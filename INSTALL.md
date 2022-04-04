@@ -66,7 +66,7 @@ Now that the touchscreen is ready, we can install the GUI.
 apt -y install cmake extra-cmake-modules cmake-extras libsdl2-2.0-0 libsdl2-dev
 cd /usr/src/
 git clone --recurse-submodules git@github.com:MartinVerges/rv-hud.git
-cd rv-hud/exported/
+cd rv-hud/
 cmake -DCMAKE_BUILD_TYPE=Release .
 make
 make install

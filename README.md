@@ -18,7 +18,7 @@ I used my [wifi-hotspot](https://github.com/MartinVerges/wifi-HotSpot/) Raspberr
 
 - Raspberry PI (I use the [4B with 8GB variant](https://www.amazon.de/gp/product/B0899VXM8F))
 - SD card (e.g. [SanDisk Extreme Pro 64GB](https://www.amazon.de/gp/product/B07G3GMRYF))
-- Display (e.g. [Waveshare 7inch 1024x600 DSI IPS Touch](https://www.amazon.de/gp/product/B09QHYKY5R)
+- Display (e.g. [Waveshare 7inch 1024x600 DSI IPS Touch](https://www.amazon.de/gp/product/B09QHYKY5R))
 
 Please note: at the current state, this Project only works on 1024x600 pixel and provides no other configurations.
 
