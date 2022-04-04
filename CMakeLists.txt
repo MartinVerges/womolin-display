@@ -32,7 +32,7 @@ find_package(SDL2 REQUIRED)
 add_compile_options(-Wall -Wextra -pedantic -Werror)
 target_link_libraries(rv-gui PRIVATE Ui lvgl lv_drivers mqttc ArduinoJson)
 
-install(FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rv-gui PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ DESTINATION /usr/lib/rv-hud/bin/)
+install(FILES rv-gui PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ DESTINATION /usr/lib/rv-hud/bin/)
 install(FILES ${CMAKE_SOURCE_DIR}/systemd/rv-hud.service DESTINATION /etc/systemd/system/)
 install(CODE "EXECUTE_PROCESS(COMMAND systemctl daemon-reload)")
 install(CODE "EXECUTE_PROCESS(COMMAND systemctl stop rv-hud.service)")
