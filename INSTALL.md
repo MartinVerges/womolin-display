@@ -76,25 +76,6 @@ Warning: The service will start up directly and you can't stop it from the tty.
 This will install the display as a system service.
 In addition it configures it to start on boot.
 
-# Tune your installation
-
-Reduce the power consumtion a bit by underclocking your CPU.
-You can set `arm_freq=500` inside `/boot/config.txt`.
-
-You can disable onboard LEDs:
-```
-[pi4]
-# Disable the PWR LED
-dtparam=pwr_led_trigger=none
-dtparam=pwr_led_activelow=off
-# Disable the Activity LED
-dtparam=act_led_trigger=none
-dtparam=act_led_activelow=off
-# Disable ethernet port LEDs
-dtparam=eth_led0=4
-dtparam=eth_led1=4
-```
-
 # Installation of the MQTT Broker
 
 All available information of your sensors will be managed inside the MQTT broker.
