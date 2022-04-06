@@ -44,6 +44,7 @@
 #include <fstream>
 #include <string>
 #include <iostream>
+#include <pthread.h>
 #include "main.h"
 
 using namespace std;
@@ -291,7 +292,7 @@ void ONCLICK_NAV_1(lv_event_t * e) {
 	NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
 }
 
-void ONCLICK_NAV_2(lv_event_t * e) {
+void ONCLICK_NAV_2(lv_event_t * e) {  // Tanklevel
 	(void)e;
 	NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
 	NAV_BTTN_ENABLE(ui_NavButton2, ui_NavIcon2);
@@ -300,7 +301,7 @@ void ONCLICK_NAV_2(lv_event_t * e) {
 	NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
 }
 
-void ONCLICK_NAV_3(lv_event_t * e) {
+void ONCLICK_NAV_3(lv_event_t * e) {  // Battery
 	(void)e;
 	NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
 	NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
@@ -309,7 +310,7 @@ void ONCLICK_NAV_3(lv_event_t * e) {
 	NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
 }
 
-void ONCLICK_NAV_4(lv_event_t * e) {
+void ONCLICK_NAV_4(lv_event_t * e) {  // Gas
 	(void)e;
 	NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
 	NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
