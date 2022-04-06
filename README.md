@@ -29,7 +29,8 @@ If you want to give it a try, take a look at the [INSTALL.md](https://github.com
 ## Screenshots
 
 <img src="screenshots/mainscreen.png?raw=true" alt="Main Screen" width="50%">
-<img src="screenshots/settings.png?raw=true" alt="Main Screen" width="50%">
+<img src="screenshots/settings.png?raw=true" alt="Settings" width="50%">
+<img src="screenshots/gas_level.png?raw=true" alt="Gas level" width="50%">
 
 ## Prepare simulator
 

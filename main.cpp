@@ -66,6 +66,8 @@ static lv_indev_t * indev_touchpad;
 
 // Generic
 config_t configuration;
+received_mqtt_data_t mqtt_data_cache;
+
 
 /**********************
  *   GLOBAL FUNCTIONS
@@ -120,6 +122,10 @@ bool save_configuration() {
   doc["freshwater_topic"] = configuration.freshwater_topic;
   doc["greywater_enabled"] = configuration.greywater_enabled;
   doc["greywater_topic"] = configuration.greywater_topic;
+  doc["gas_bottle1_enabled"] = configuration.gas_bottle1_enabled;
+  doc["gas_bottle1_topic"] = configuration.gas_bottle1_topic;
+  doc["gas_bottle2_enabled"] = configuration.gas_bottle2_enabled;
+  doc["gas_bottle2_topic"] = configuration.gas_bottle2_topic;
 
   if (serializeJsonPretty(doc, fs) == 0) {
     perror("Failed to write to file!");
@@ -147,6 +153,10 @@ void load_configuration() {
   configuration.freshwater_topic = doc["freshwater_topic"] | "freshwater/tanklevel";
   configuration.greywater_enabled = doc["greywater_enabled"] | false;
   configuration.greywater_topic = doc["greywater_topic"] | "greywater/tanklevel";
+  configuration.gas_bottle1_enabled = doc["gas_bottle1_enabled"] | false;
+  configuration.gas_bottle1_topic = doc["gas_bottle1_topic"] | "gas/bottle1";
+  configuration.gas_bottle2_enabled = doc["gas_bottle2_enabled"] | false;
+  configuration.gas_bottle2_topic = doc["gas_bottle2_topic"] | "gas/bottle2";
   fs.close();
 }
 
@@ -237,9 +247,37 @@ void mqtt_reconnect_client(struct mqtt_client* client, void **reconnect_state_vp
   );
   uint8_t connect_flags = MQTT_CONNECT_CLEAN_SESSION;
   mqtt_connect(client, "mydisplay", NULL, NULL, 0, configuration.mqtt_user.c_str(), configuration.mqtt_pass.c_str(), connect_flags, 400);
-    
+
   if (configuration.freshwater_enabled) mqtt_subscribe(client, configuration.freshwater_topic.c_str(), 0);
   if (configuration.greywater_enabled) mqtt_subscribe(client, configuration.greywater_topic.c_str(), 0);
+  if (configuration.gas_bottle1_enabled) mqtt_subscribe(client, configuration.gas_bottle1_topic.c_str(), 0);
+  if (configuration.gas_bottle2_enabled) mqtt_subscribe(client, configuration.gas_bottle2_topic.c_str(), 0);
+}
+
+void set_level(uint8_t num, int level) {
+  if (num == 1) {
+    lv_bar_set_value(ui_Level1, level, LV_ANIM_ON);
+    lv_label_set_text_fmt(ui_Level1State, "%d%%", level);
+  } else if (num == 2) {
+    lv_bar_set_value(ui_Level2, level, LV_ANIM_ON);
+    lv_label_set_text_fmt(ui_Level2State, "%d%%", level);
+  }
+}
+
+void refresh_levels() {
+  switch (nav_screen) {
+    case 2: // Water
+      set_level(1, mqtt_data_cache.freshwater);
+      set_level(2, mqtt_data_cache.greywater);
+    break;
+    case 4: // Gas
+      set_level(1, mqtt_data_cache.gas_bottle1);
+      set_level(2, mqtt_data_cache.gas_bottle2);
+    break;
+    default:
+      printf("Unknown screen");
+    break;
+  }  
 }
 
 void mqtt_publish_callback(void** unused, struct mqtt_response_publish *published) {
@@ -254,15 +292,17 @@ void mqtt_publish_callback(void** unused, struct mqtt_response_publish *publishe
  
   // FIXME: get rid of c_str()
   printf("Received publish('%s'): %s\n", topic_name, application_message);
-  if (configuration.freshwater_enabled && strcmp(topic_name, configuration.freshwater_topic.c_str()) == 0) {
-    lv_bar_set_value(ui_Level1, atoi(application_message), LV_ANIM_ON);
-    lv_label_set_text_fmt(ui_Level1State, "%d%%", atoi(application_message));
-  }
-  if (configuration.greywater_enabled && strcmp(topic_name, configuration.greywater_topic.c_str()) == 0) {
-    lv_bar_set_value(ui_Level2, atoi(application_message), LV_ANIM_ON);
-    lv_label_set_text_fmt(ui_Level2State, "%d%%", atoi(application_message));
+  if (strcmp(topic_name, configuration.freshwater_topic.c_str()) == 0) {
+    mqtt_data_cache.freshwater = atoi(application_message);
+  } else if (strcmp(topic_name, configuration.greywater_topic.c_str()) == 0) {
+    mqtt_data_cache.greywater = atoi(application_message);
+  } else if (strcmp(topic_name, configuration.gas_bottle1_topic.c_str()) == 0) {
+    mqtt_data_cache.gas_bottle1 = atoi(application_message);
+  } else if (strcmp(topic_name, configuration.gas_bottle2_topic.c_str()) == 0) {
+    mqtt_data_cache.gas_bottle2 = atoi(application_message);
   }
 
+  refresh_levels();
   free(topic_name);
   free(application_message);
 }
@@ -285,46 +325,77 @@ void NAV_BTTN_DISABLE(lv_obj_t * bttn, lv_obj_t * icon) {
 
 void ONCLICK_NAV_1(lv_event_t * e) {
 	(void)e;
+  nav_screen = 1;
 	NAV_BTTN_ENABLE(ui_NavButton1, ui_NavIcon1);
 	NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
 	NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
 	NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
 	NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
+  refresh_levels();
 }
 
 void ONCLICK_NAV_2(lv_event_t * e) {  // Tanklevel
 	(void)e;
+  nav_screen = 2;
 	NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
 	NAV_BTTN_ENABLE(ui_NavButton2, ui_NavIcon2);
 	NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
 	NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
 	NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
+
+  lv_label_set_text(ui_Level1Label, "FRESH WATER");
+  lv_label_set_text(ui_Level2Label, "GREY WATER");
+  lv_img_set_src(ui_Level1Icon, &ui_img_icon_water_content_clean_png);
+  lv_img_set_src(ui_Level2Icon, &ui_img_icon_water_content_dirty_png);
+
+  if (configuration.freshwater_enabled) lv_obj_clear_flag(ui_LevelInfo1, LV_OBJ_FLAG_HIDDEN);
+  else lv_obj_add_flag(ui_LevelInfo1, LV_OBJ_FLAG_HIDDEN);
+  if (configuration.greywater_enabled) lv_obj_clear_flag(ui_LevelInfo2, LV_OBJ_FLAG_HIDDEN);
+  else lv_obj_add_flag(ui_LevelInfo2, LV_OBJ_FLAG_HIDDEN);
+  refresh_levels();
 }
 
 void ONCLICK_NAV_3(lv_event_t * e) {  // Battery
 	(void)e;
+  nav_screen = 3;
 	NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
 	NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
 	NAV_BTTN_ENABLE(ui_NavButton3, ui_NavIcon3);
 	NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
 	NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
+  refresh_levels();
 }
 
 void ONCLICK_NAV_4(lv_event_t * e) {  // Gas
 	(void)e;
+  nav_screen = 4;
 	NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
 	NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
 	NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
 	NAV_BTTN_ENABLE(ui_NavButton4, ui_NavIcon4);
 	NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
+
+  lv_label_set_text(ui_Level1Label, "BOTTLE 1");
+  lv_label_set_text(ui_Level2Label, "BOTTLE 2");
+  lv_img_set_src(ui_Level1Icon, &ui_img_icon_gas_large_png);
+  lv_img_set_src(ui_Level2Icon, &ui_img_icon_gas_large_png);
+
+  if (configuration.gas_bottle1_enabled) lv_obj_clear_flag(ui_LevelInfo1, LV_OBJ_FLAG_HIDDEN);
+  else lv_obj_add_flag(ui_LevelInfo1, LV_OBJ_FLAG_HIDDEN);
+  if (configuration.gas_bottle2_enabled) lv_obj_clear_flag(ui_LevelInfo2, LV_OBJ_FLAG_HIDDEN);
+  else lv_obj_add_flag(ui_LevelInfo2, LV_OBJ_FLAG_HIDDEN);
+  refresh_levels();
 }
+
 void ONCLICK_NAV_5(lv_event_t * e) {
 	(void)e;
+  nav_screen = 5;
 	NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
 	NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
 	NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
 	NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
 	NAV_BTTN_ENABLE(ui_NavButton5, ui_NavIcon5);
+  refresh_levels();
 }
  
 void PREFILL_SETTINGS(lv_event_t * e) {
@@ -336,9 +407,13 @@ void PREFILL_SETTINGS(lv_event_t * e) {
 
   switch_state(ui_EnableFreshWater, configuration.freshwater_enabled);
 	lv_textarea_set_text(ui_FreshWaterTopic, configuration.freshwater_topic.c_str());
-
   switch_state(ui_EnableGreyWater, configuration.greywater_enabled);
 	lv_textarea_set_text(ui_GreyWaterTopic, configuration.greywater_topic.c_str());
+
+  switch_state(ui_EnableGas1, configuration.gas_bottle1_enabled);
+	lv_textarea_set_text(ui_GasTopic1, configuration.gas_bottle1_topic.c_str());
+  switch_state(ui_EnableGas2, configuration.gas_bottle2_enabled);
+	lv_textarea_set_text(ui_GasTopic2, configuration.gas_bottle2_topic.c_str());
 }
 
 void CLOSE_SETTINGS(lv_event_t * e) {
@@ -349,25 +424,21 @@ void CLOSE_SETTINGS(lv_event_t * e) {
 
   configuration.freshwater_enabled = lv_obj_has_state(ui_EnableFreshWater, LV_STATE_CHECKED);
   configuration.freshwater_topic = lv_textarea_get_text(ui_FreshWaterTopic);
-  if (configuration.freshwater_enabled) lv_obj_clear_flag(ui_LevelInfo1, LV_OBJ_FLAG_HIDDEN);
-
   configuration.greywater_enabled = lv_obj_has_state(ui_EnableGreyWater, LV_STATE_CHECKED);
   configuration.greywater_topic = lv_textarea_get_text(ui_GreyWaterTopic);
-  if (configuration.greywater_enabled) lv_obj_clear_flag(ui_LevelInfo2, LV_OBJ_FLAG_HIDDEN);
+
+  configuration.gas_bottle1_enabled = lv_obj_has_state(ui_EnableGas1, LV_STATE_CHECKED);
+  configuration.gas_bottle1_topic = lv_textarea_get_text(ui_GasTopic1);
+  configuration.gas_bottle2_enabled = lv_obj_has_state(ui_EnableGas2, LV_STATE_CHECKED);
+  configuration.gas_bottle2_topic = lv_textarea_get_text(ui_GasTopic2);
 
   save_configuration();
   mqtt_force_reconnect();
+  ONCLICK_NAV_2(e);
 }
 
 void LOADSCREEN(lv_event_t * e) {
-	(void)e;
-	NAV_BTTN_ENABLE(ui_NavButton2, ui_NavIcon2);
-  if (!configuration.freshwater_enabled) {  // hide
-    lv_obj_add_flag(ui_LevelInfo1, LV_OBJ_FLAG_HIDDEN);
-  }
-  if (!configuration.greywater_enabled) {  // hide
-    lv_obj_add_flag(ui_LevelInfo2, LV_OBJ_FLAG_HIDDEN);
-  }
+  ONCLICK_NAV_2(e);
 }
 
 /*void NAV_BTTN_ACTIVE() {

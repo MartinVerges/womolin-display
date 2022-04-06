@@ -6,5 +6,9 @@
   "freshwater_enabled": true,
   "freshwater_topic": "freshwater/tanklevel",
   "greywater_enabled": true,
-  "greywater_topic": "greywater/tanklevel"
+  "greywater_topic": "greywater/tanklevel",
+  "gas_bottle1_enabled": true,
+  "gas_bottle1_topic": "gas/bottle1",
+  "gas_bottle2_enabled": true,
+  "gas_bottle2_topic": "gas/bottle2"
 }

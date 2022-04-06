@@ -7,8 +7,8 @@ CMakeFiles/*
 rv-gui
 bin/**
 
-squareline_gui_generator/cache/
-squareline_gui_generator/generated/
+squareline_gui_*/cache/
+squareline_gui_*/generated/
 
 # Compiled Object files
 **/.DS_Store

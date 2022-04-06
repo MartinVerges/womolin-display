@@ -51,6 +51,12 @@ lv_obj_t * ui_GreyWaterLevel;
 lv_obj_t * ui_EnableGreyWater;
 lv_obj_t * ui_GreyWaterLabel;
 lv_obj_t * ui_GreyWaterTopic;
+lv_obj_t * ui_GasSensors;
+lv_obj_t * ui_GasLabel1;
+lv_obj_t * ui_EnableGas1;
+lv_obj_t * ui_EnableGas2;
+lv_obj_t * ui_GasTopic1;
+lv_obj_t * ui_GasTopic2;
 
 ///////////////////// FUNCTIONS ////////////////////
 static void ui_event_MainScreen(lv_event_t * e) {
@@ -530,7 +536,7 @@ void ui_MainScreen_screen_init(void) {
     lv_obj_set_x(ui_Level2Label, 120);
     lv_obj_set_y(ui_Level2Label, 170);
 
-    lv_label_set_text(ui_Level2Label, "Grey WATER");
+    lv_label_set_text(ui_Level2Label, "GREY WATER");
 
     lv_obj_clear_flag(ui_Level2Label, LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE | LV_OBJ_FLAG_GESTURE_BUBBLE |
                       LV_OBJ_FLAG_SNAPPABLE | LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM |
@@ -692,32 +698,22 @@ void ui_Settings_screen_init(void) {
     ui_MqttConnection = lv_obj_create(ui_Settings);
     ui_style_group(ui_MqttConnection);
     ui_style_position(ui_MqttConnection, 50, 50, 165, 302, LV_ALIGN_TOP_LEFT);
-
-    // ui_MqttServerLabel
     ui_MqttServerLabel = lv_label_create(ui_MqttConnection);
     ui_style_label(ui_MqttServerLabel, "MQTT Server", 0, 0);
-
-    // ui_MqttHost
     ui_MqttHost = lv_textarea_create(ui_MqttConnection);
     ui_style_position(ui_MqttHost, 0, 25, 25, lv_pct(80), LV_ALIGN_TOP_RIGHT);
     ui_style_textarea(ui_MqttHost);
     lv_textarea_set_placeholder_text(ui_MqttHost, "IP or Hostname");
-
-    // ui_MqttPort
     ui_MqttPort = lv_textarea_create(ui_MqttConnection);
     ui_style_position(ui_MqttPort, 0, 60, 25, lv_pct(80), LV_ALIGN_TOP_RIGHT);
     ui_style_textarea(ui_MqttPort);
     lv_textarea_set_placeholder_text(ui_MqttPort, "Port");
     lv_textarea_set_accepted_chars(ui_MqttPort, "0123456789");
     lv_textarea_set_max_length(ui_MqttPort, 5);
-
-    // ui_MqttUsername
     ui_MqttUsername = lv_textarea_create(ui_MqttConnection);
     ui_style_position(ui_MqttUsername, 0, 95, 25, lv_pct(80), LV_ALIGN_TOP_RIGHT);
     ui_style_textarea(ui_MqttUsername);
     lv_textarea_set_placeholder_text(ui_MqttUsername, "Username");
-        
-    // ui_MqttPassword
     ui_MqttPassword = lv_textarea_create(ui_MqttConnection);
     ui_style_position(ui_MqttPassword, 0, 130, 25, lv_pct(80), LV_ALIGN_TOP_RIGHT);
     ui_style_textarea(ui_MqttPassword);
@@ -727,17 +723,11 @@ void ui_Settings_screen_init(void) {
     ui_FreshWaterLevel = lv_obj_create(ui_Settings);
     ui_style_group(ui_FreshWaterLevel);
     ui_style_position(ui_FreshWaterLevel, 50, 230, 50, 302, LV_ALIGN_TOP_LEFT);
-
-    // ui_EnableFreshWater
     ui_EnableFreshWater = lv_switch_create(ui_FreshWaterLevel);
     ui_style_position(ui_EnableFreshWater, 0, 0, 25, 50, LV_ALIGN_BOTTOM_LEFT);
     ui_style_switch(ui_EnableFreshWater);
-
-    // ui_FreshWaterLabel
     ui_FreshWaterLabel = lv_label_create(ui_FreshWaterLevel);
     ui_style_label(ui_FreshWaterLabel, "Fresh water sensor", 0, 0);
-
-    // ui_FreshWaterTopic
     ui_FreshWaterTopic = lv_textarea_create(ui_FreshWaterLevel);
     ui_style_position(ui_FreshWaterTopic, 0, 0, 25, lv_pct(80), LV_ALIGN_BOTTOM_RIGHT);
     ui_style_textarea(ui_FreshWaterTopic);
@@ -747,21 +737,36 @@ void ui_Settings_screen_init(void) {
     ui_GreyWaterLevel = lv_obj_create(ui_Settings);
     ui_style_group(ui_GreyWaterLevel);
     ui_style_position(ui_GreyWaterLevel, 50, 290, 50, 302, LV_ALIGN_TOP_LEFT);
-
-    // ui_EnableGreyWater
     ui_EnableGreyWater = lv_switch_create(ui_GreyWaterLevel);
     ui_style_position(ui_EnableGreyWater, 0, 0, 25, 50, LV_ALIGN_BOTTOM_LEFT);
     ui_style_switch(ui_EnableGreyWater);
-
-    // ui_GreyWaterLabel
     ui_GreyWaterLabel = lv_label_create(ui_GreyWaterLevel);
     ui_style_label(ui_GreyWaterLabel, "Grey water sensor", 0, 0);
-
-    // ui_GreyWaterTopic
     ui_GreyWaterTopic = lv_textarea_create(ui_GreyWaterLevel);
     ui_style_position(ui_GreyWaterTopic, 0, 0, 25, lv_pct(80), LV_ALIGN_BOTTOM_RIGHT);
     ui_style_textarea(ui_GreyWaterTopic);
     lv_textarea_set_placeholder_text(ui_GreyWaterTopic, "identifier / mqtt topic");
+
+    // ui_Gaslevel
+    ui_GasSensors = lv_obj_create(ui_Settings);
+    ui_style_group(ui_GasSensors);
+    ui_style_position(ui_GasSensors, 380, 50, 90, 302, LV_ALIGN_TOP_LEFT);
+    ui_GasLabel1 = lv_label_create(ui_GasSensors);
+    ui_style_label(ui_GasLabel1, "Gas bottle level", 0, 0);
+    ui_EnableGas1 = lv_switch_create(ui_GasSensors);
+    ui_style_position(ui_EnableGas1, 0, 25, 25, 50, LV_ALIGN_TOP_LEFT);
+    ui_style_switch(ui_EnableGas1);
+    ui_EnableGas2 = lv_switch_create(ui_GasSensors);
+    ui_style_position(ui_EnableGas2, 0, 60, 25, 50, LV_ALIGN_TOP_LEFT);
+    ui_style_switch(ui_EnableGas2);
+    ui_GasTopic1 = lv_textarea_create(ui_GasSensors);
+    ui_style_position(ui_GasTopic1, 0, 25, 25, lv_pct(80), LV_ALIGN_TOP_RIGHT);
+    ui_style_textarea(ui_GasTopic1);
+    lv_textarea_set_placeholder_text(ui_GasTopic1, "identifier / mqtt topic");
+    ui_GasTopic2 = lv_textarea_create(ui_GasSensors);
+    ui_style_position(ui_GasTopic2, 0, 60, 25, lv_pct(80), LV_ALIGN_TOP_RIGHT);
+    ui_style_textarea(ui_GasTopic2);
+    lv_textarea_set_placeholder_text(ui_GasTopic2, "identifier / mqtt topic");
 
     // Activate the keyboard in the first input field
     lv_keyboard_set_textarea(ui_Keyboard, ui_MqttHost);

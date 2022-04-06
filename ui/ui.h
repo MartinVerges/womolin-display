@@ -61,6 +61,12 @@ extern lv_obj_t * ui_GreyWaterLevel;
 extern lv_obj_t * ui_EnableGreyWater;
 extern lv_obj_t * ui_GreyWaterLabel;
 extern lv_obj_t * ui_GreyWaterTopic;
+extern lv_obj_t * ui_GasSensors;
+extern lv_obj_t * ui_GasLabel1;
+extern lv_obj_t * ui_EnableGas1;
+extern lv_obj_t * ui_EnableGas2;
+extern lv_obj_t * ui_GasTopic1;
+extern lv_obj_t * ui_GasTopic2;
 
 void NAV_BTTN_ENABLE(lv_obj_t * bttn, lv_obj_t * icon);
 void NAV_BTTN_DISABLE(lv_obj_t * bttn, lv_obj_t * icon);
@@ -83,6 +89,7 @@ LV_IMG_DECLARE(ui_img_icon_weather_png)         // assets/icon_weather.png
 LV_IMG_DECLARE(ui_img_icon_water_png)           // assets/icon_water.png
 LV_IMG_DECLARE(ui_img_icon_battery_png)         // assets/icon_battery.png
 LV_IMG_DECLARE(ui_img_icon_gas_png)             // assets/icon_gas.png
+LV_IMG_DECLARE(ui_img_icon_gas_large_png);      // assets/icon_gas_large.png
 LV_IMG_DECLARE(ui_img_icon_temperature_png)     // assets/icon_temperature.png
 LV_IMG_DECLARE(ui_img_bg_png)                   // assets/bg.png
 LV_IMG_DECLARE(ui_img_icon_close_png)           // assets/icon_close.png
