@@ -49,3 +49,7 @@ void mqtt_force_reconnect();
 void mqtt_prepare(struct mqtt_client* client, config_t &config);
 void mqtt_reconnect_client(struct mqtt_client* client, void **reconnect_state_vptr);
 void mqtt_publish_callback(void** unused, struct mqtt_response_publish *published);
+
+#define Relay_Ch1 26
+#define Relay_Ch2 20
+#define Relay_Ch3 21

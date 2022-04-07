@@ -67,6 +67,13 @@ extern lv_obj_t * ui_EnableGas1;
 extern lv_obj_t * ui_EnableGas2;
 extern lv_obj_t * ui_GasTopic1;
 extern lv_obj_t * ui_GasTopic2;
+extern lv_obj_t * ui_Relays;
+extern lv_obj_t * ui_Relay1;
+extern lv_obj_t * ui_Relay1Label;
+extern lv_obj_t * ui_Relay2;
+extern lv_obj_t * ui_Relay2Label;
+extern lv_obj_t * ui_Relay3;
+extern lv_obj_t * ui_Relay3Label;
 
 void NAV_BTTN_ENABLE(lv_obj_t * bttn, lv_obj_t * icon);
 void NAV_BTTN_DISABLE(lv_obj_t * bttn, lv_obj_t * icon);
@@ -78,6 +85,9 @@ void ONCLICK_NAV_5(lv_event_t * e);
 void PREFILL_SETTINGS(lv_event_t * e);
 void CLOSE_SETTINGS(lv_event_t * e);
 void LOADSCREEN(lv_event_t * e);
+void RELAY_1(lv_event_t * e);
+void RELAY_2(lv_event_t * e);
+void RELAY_3(lv_event_t * e);
 
 void switch_state(lv_obj_t * obj, bool state);
 

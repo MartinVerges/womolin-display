@@ -57,6 +57,13 @@ lv_obj_t * ui_EnableGas1;
 lv_obj_t * ui_EnableGas2;
 lv_obj_t * ui_GasTopic1;
 lv_obj_t * ui_GasTopic2;
+lv_obj_t * ui_Relays;
+lv_obj_t * ui_Relay1;
+lv_obj_t * ui_Relay1Label;
+lv_obj_t * ui_Relay2;
+lv_obj_t * ui_Relay2Label;
+lv_obj_t * ui_Relay3;
+lv_obj_t * ui_Relay3Label;
 
 ///////////////////// FUNCTIONS ////////////////////
 static void ui_event_MainScreen(lv_event_t * e) {
@@ -112,6 +119,24 @@ static void ui_event_ButtonSettingsClose(lv_event_t * e) {
     if(event == LV_EVENT_CLICKED) {
         _ui_screen_change(ui_MainScreen, LV_SCR_LOAD_ANIM_FADE_ON, 0, 0);
         CLOSE_SETTINGS(e);
+    }
+}
+static void ui_event_relay_1(lv_event_t * e) {
+    lv_event_code_t event = lv_event_get_code(e);
+    if(event == LV_EVENT_VALUE_CHANGED) {
+        RELAY_1(e);
+    }
+}
+static void ui_event_relay_2(lv_event_t * e) {
+    lv_event_code_t event = lv_event_get_code(e);
+    if(event == LV_EVENT_VALUE_CHANGED) {
+        RELAY_2(e);
+    }
+}
+static void ui_event_relay_3(lv_event_t * e) {
+    lv_event_code_t event = lv_event_get_code(e);
+    if(event == LV_EVENT_VALUE_CHANGED) {
+        RELAY_3(e);
     }
 }
 
@@ -609,6 +634,44 @@ void ui_MainScreen_screen_init(void) {
     lv_obj_add_event_cb(ui_ButtonSettingsOpen, ui_event_ButtonSettingsOpen, LV_EVENT_ALL, NULL);
     lv_obj_set_style_img_recolor(ui_ButtonSettingsOpen, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_img_recolor_opa(ui_ButtonSettingsOpen, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    // ui_Relays
+    ui_Relays = lv_obj_create(ui_Content);
+    lv_obj_set_width(ui_Relays, 160);
+    lv_obj_set_height(ui_Relays, 120);
+    lv_obj_set_x(ui_Relays, 0);
+    lv_obj_set_y(ui_Relays, 150);
+    lv_obj_set_align(ui_Relays, LV_ALIGN_TOP_RIGHT);
+    lv_obj_clear_flag(ui_Relays, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE |
+                      LV_OBJ_FLAG_GESTURE_BUBBLE | LV_OBJ_FLAG_SNAPPABLE | LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC |
+                      LV_OBJ_FLAG_SCROLL_MOMENTUM | LV_OBJ_FLAG_SCROLL_CHAIN);
+    lv_obj_set_style_radius(ui_Relays, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_opa(ui_Relays, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_left(ui_Relays, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_right(ui_Relays, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_top(ui_Relays, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_bottom(ui_Relays, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_Relay1 = lv_switch_create(ui_Relays);
+    ui_style_position(ui_Relay1, 0, 0, 25, 50, LV_ALIGN_TOP_LEFT);
+    ui_style_switch(ui_Relay1);
+    lv_obj_add_event_cb(ui_Relay1, ui_event_relay_1, LV_EVENT_ALL, NULL);
+    ui_Relay1Label = lv_label_create(ui_Relays);
+    ui_style_label(ui_Relay1Label, "1. Relay", 60, 0);
+
+    ui_Relay2 = lv_switch_create(ui_Relays);
+    ui_style_position(ui_Relay2, 0, 40, 25, 50, LV_ALIGN_TOP_LEFT);
+    ui_style_switch(ui_Relay2);
+    lv_obj_add_event_cb(ui_Relay2, ui_event_relay_2, LV_EVENT_ALL, NULL);
+    ui_Relay2Label = lv_label_create(ui_Relays);
+    ui_style_label(ui_Relay2Label, "2. Relay", 60, 40);
+
+    ui_Relay3 = lv_switch_create(ui_Relays);
+    ui_style_position(ui_Relay3, 0, 80, 25, 50, LV_ALIGN_TOP_LEFT);
+    ui_style_switch(ui_Relay3);
+    lv_obj_add_event_cb(ui_Relay3, ui_event_relay_3, LV_EVENT_ALL, NULL);
+    ui_Relay3Label = lv_label_create(ui_Relays);
+    ui_style_label(ui_Relay3Label, "3. Relay", 60, 80);
 
     // ui_Navigation
     ui_Navigation = lv_obj_create(ui_MainScreen);

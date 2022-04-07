@@ -36,6 +36,12 @@
 #include <ArduinoJson.h>
 
 /*********************
+ *   BCM2835
+ *********************/
+#include "lib/bcm2835/bcm2835.h"
+bool use_bcm2835 = false;
+
+/*********************
  *   INCLUDES
  *********************/
 #include <linux/input.h>
@@ -86,6 +92,14 @@ int main(int argc, char **argv) {
   hal_init_raspberry();
 
   ui_init();
+
+  if (bcm2835_init() ) {
+    use_bcm2835 = true;
+    printf("[BCM2835] Init success");
+    bcm2835_gpio_fsel(Relay_Ch1, BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_fsel(Relay_Ch2, BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_fsel(Relay_Ch3, BCM2835_GPIO_FSEL_OUTP);
+  }
 
   // Allways allocate the memory on startup. We will never free it up again!
   int bufsize = 2048;
@@ -439,6 +453,31 @@ void CLOSE_SETTINGS(lv_event_t * e) {
 
 void LOADSCREEN(lv_event_t * e) {
   ONCLICK_NAV_2(e);
+}
+
+void RELAY_1(lv_event_t * e) {
+  if (!use_bcm2835) return;  
+  if (lv_obj_has_state(ui_Relay1, LV_STATE_CHECKED)) {
+    bcm2835_gpio_write(Relay_Ch1, LOW);
+  } else {
+    bcm2835_gpio_write(Relay_Ch1, HIGH);
+  }
+}
+void RELAY_2(lv_event_t * e) {
+  if (!use_bcm2835) return;
+  if (lv_obj_has_state(ui_Relay2, LV_STATE_CHECKED)) {
+    bcm2835_gpio_write(Relay_Ch2, LOW);
+  } else {
+    bcm2835_gpio_write(Relay_Ch2, HIGH);
+  }
+}
+void RELAY_3(lv_event_t * e) {
+  if (!use_bcm2835) return;
+  if (lv_obj_has_state(ui_Relay3, LV_STATE_CHECKED)) {
+    bcm2835_gpio_write(Relay_Ch3, LOW);
+  } else {
+    bcm2835_gpio_write(Relay_Ch3, HIGH);
+  }
 }
 
 /*void NAV_BTTN_ACTIVE() {
