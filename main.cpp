@@ -99,10 +99,11 @@ int main(int argc, char **argv) {
     bcm2835_gpio_fsel(Relay_Ch1, BCM2835_GPIO_FSEL_OUTP);
     bcm2835_gpio_fsel(Relay_Ch2, BCM2835_GPIO_FSEL_OUTP);
     bcm2835_gpio_fsel(Relay_Ch3, BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_delay(100);
     // on boot, release all relais
-    bcm2835_gpio_write(Relay_Ch1, LOW);
-    bcm2835_gpio_write(Relay_Ch2, LOW);
-    bcm2835_gpio_write(Relay_Ch3, LOW);
+    bcm2835_gpio_write(Relay_Ch1, HIGH);
+    bcm2835_gpio_write(Relay_Ch2, HIGH);
+    bcm2835_gpio_write(Relay_Ch3, HIGH);
   }
 
   // Allways allocate the memory on startup. We will never free it up again!
