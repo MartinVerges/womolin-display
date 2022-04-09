@@ -37,6 +37,7 @@ If you want to give it a try, take a look at the [INSTALL.md](https://github.com
 In order to run it on a simulator, you have to change the Symlink of `lv_conf.h`, `lv_drv_conf.h`, and `Makefile` to simulator.
 
 ```
+git update-index --skip-worktree lv_conf.h lv_drv_conf.h
 ln -sf lv_conf.h.simulator lv_conf.h
 ln -sf lv_drv_conf.h.simulator lv_drv_conf.h
 cmake . && make clean
@@ -44,6 +45,7 @@ cmake . && make clean
 
 To run it on the Raspberry PI, please use:
 ```
+git update-index --skip-worktree lv_conf.h lv_drv_conf.h
 ln -sf lv_conf.h.raspberry lv_conf.h
 ln -sf lv_drv_conf.h.raspberry lv_drv_conf.h
 cmake . && make clean
