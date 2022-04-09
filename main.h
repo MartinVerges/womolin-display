@@ -5,6 +5,8 @@
 using namespace std;
 
 int nav_screen = 1;
+bool display_sleep = false;
+uint8_t display_brightness = 0;
 
 const char* config_filename = "config.json";
 struct config_t {

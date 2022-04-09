@@ -19,6 +19,9 @@ set(LV_CONF_PATH
     ${CMAKE_CURRENT_SOURCE_DIR}/lv_conf.h
     CACHE STRING "" FORCE)
 
+
+set(MQTT_C_EXAMPLES OFF)
+
 FetchContent_Declare(lvgl        GIT_REPOSITORY https://github.com/lvgl/lvgl                 GIT_TAG v8.2.0)
 FetchContent_Declare(lv_drivers  GIT_REPOSITORY https://github.com/lvgl/lv_drivers           GIT_TAG v8.2.0)
 FetchContent_Declare(mqttc       GIT_REPOSITORY https://github.com/LiamBindle/MQTT-C.git     GIT_TAG 1.1.5)

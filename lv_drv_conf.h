@@ -1,1 +1,1 @@
-lv_drv_conf.h.raspberry
+lv_drv_conf.h.simulator

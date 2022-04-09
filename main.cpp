@@ -50,7 +50,6 @@ bool use_bcm2835 = false;
 #include <fstream>
 #include <string>
 #include <iostream>
-#include <pthread.h>
 #include "main.h"
 
 using namespace std;
@@ -78,6 +77,18 @@ received_mqtt_data_t mqtt_data_cache;
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
+void change_display_brightness(uint8_t val) {
+  if (display_brightness != val) {
+    char charValue[3];
+    sprintf(charValue, "%d", val);
+
+    //1 = 100%  255 = 0% brightness in /sys/waveshare/rpi_backlight/brightness
+    FILE *out=fopen("/sys/waveshare/rpi_backlight/brightness","w");
+    fputs(charValue, out);
+    fclose(out);
+  }
+}
+
 int main(int argc, char **argv) {
   (void)argc; /* Unused */
   (void)argv; /* Unused */
@@ -99,8 +110,7 @@ int main(int argc, char **argv) {
     bcm2835_gpio_fsel(Relay_Ch1, BCM2835_GPIO_FSEL_OUTP);
     bcm2835_gpio_fsel(Relay_Ch2, BCM2835_GPIO_FSEL_OUTP);
     bcm2835_gpio_fsel(Relay_Ch3, BCM2835_GPIO_FSEL_OUTP);
-    bcm2835_delay(100);
-    // on boot, release all relais
+    bcm2835_delay(100); // on boot, release all relais
     bcm2835_gpio_write(Relay_Ch1, HIGH);
     bcm2835_gpio_write(Relay_Ch2, HIGH);
     bcm2835_gpio_write(Relay_Ch3, HIGH);
@@ -117,16 +127,37 @@ int main(int argc, char **argv) {
 
   // Update the clock
   timer_upd_clock = lv_timer_create(display_update_clock, 500, NULL);
-  timer_mqtt_sync = lv_timer_create(mqtt_sync_wrapper, 500, &mqtt);
+  timer_mqtt_sync = lv_timer_create(mqtt_sync_wrapper, 2500, &mqtt);
 
   /*Handle LitlevGL tasks (tickless mode)*/
   while(1) {
-      lv_tick_inc(5);
-      lv_timer_handler();
-      usleep(5000);
+    lv_tick_inc(5);
+    lv_timer_handler();
+    usleep(5000);
+
+    // Normal operation (no sleep) in < 5 sec inactivity
+    if (lv_disp_get_inactive_time(NULL) < 5000) {
+      display_sleep = false;
+    } else { // Sleep on inactivity
+      display_sleep = true;
+      change_display_brightness(255);
+      // 1 = 100%  255 = 0% brightness in /sys/waveshare/rpi_backlight/brightness
+    }
   }
 
   return 0;
+}
+
+void my_input_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data) {
+  #if USE_SDL
+    sdl_mouse_read(indev_drv, data);
+  #endif
+  #if USE_EVDEV
+    evdev_read(indev_drv, data);
+  #endif
+  if(display_sleep && data->state == LV_INDEV_STATE_PRESSED) {
+    change_display_brightness(10);
+  }
 }
 
 bool save_configuration() {
@@ -198,7 +229,7 @@ void hal_init_simulator(void) {
   /* Add a mouse as input device */
   lv_indev_drv_init(&indev_drv); /*Basic initialization*/
   indev_drv.type = LV_INDEV_TYPE_POINTER;
-  indev_drv.read_cb = sdl_mouse_read;
+  indev_drv.read_cb = my_input_read;
   lv_indev_drv_register(&indev_drv);
 #endif
 }
@@ -223,7 +254,7 @@ void hal_init_raspberry(void) {
   evdev_init();
   lv_indev_drv_init(&indev_drv);
   indev_drv.type = LV_INDEV_TYPE_POINTER;
-  indev_drv.read_cb = evdev_read;
+  indev_drv.read_cb = my_input_read;
   indev_touchpad = lv_indev_drv_register(&indev_drv);
 #endif
 }
