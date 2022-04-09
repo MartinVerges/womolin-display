@@ -1,1 +1,1 @@
-lv_conf.h.simulator
+lv_conf.h.raspberry
