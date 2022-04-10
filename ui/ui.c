@@ -57,6 +57,12 @@ lv_obj_t * ui_EnableGas1;
 lv_obj_t * ui_EnableGas2;
 lv_obj_t * ui_GasTopic1;
 lv_obj_t * ui_GasTopic2;
+lv_obj_t * ui_Display;
+lv_obj_t * ui_DisplayLabel;
+lv_obj_t * ui_DisplayDimEnable;
+lv_obj_t * ui_DisplayDimTimeout;
+lv_obj_t * ui_DisplayBacklightMax;
+lv_obj_t * ui_DisplayBacklightMin;
 lv_obj_t * ui_Relays;
 lv_obj_t * ui_Relay1;
 lv_obj_t * ui_Relay1Label;
@@ -830,6 +836,28 @@ void ui_Settings_screen_init(void) {
     ui_style_position(ui_GasTopic2, 0, 60, 25, lv_pct(80), LV_ALIGN_TOP_RIGHT);
     ui_style_textarea(ui_GasTopic2);
     lv_textarea_set_placeholder_text(ui_GasTopic2, "identifier / mqtt topic");
+
+    // ui_Display
+    ui_Display = lv_obj_create(ui_Settings);
+    ui_style_group(ui_Display);
+    ui_style_position(ui_Display, 380, 160, 130, 302, LV_ALIGN_TOP_LEFT);
+    ui_DisplayDimEnable = lv_switch_create(ui_Display);
+    ui_style_position(ui_DisplayDimEnable, 0, 25, 25, 50, LV_ALIGN_TOP_LEFT);
+    ui_style_switch(ui_DisplayDimEnable);
+    ui_DisplayLabel = lv_label_create(ui_Display);
+    ui_style_label(ui_DisplayLabel, "Display Backlight Dimming", 0, 0);
+    ui_DisplayDimTimeout = lv_textarea_create(ui_Display);
+    ui_style_position(ui_DisplayDimTimeout, 0, 25, 25, lv_pct(80), LV_ALIGN_TOP_RIGHT);
+    ui_style_textarea(ui_DisplayDimTimeout);
+    lv_textarea_set_placeholder_text(ui_DisplayDimTimeout, "timeout in sec");
+    ui_DisplayBacklightMax = lv_textarea_create(ui_Display);
+    ui_style_position(ui_DisplayBacklightMax, 0, 60, 25, lv_pct(80), LV_ALIGN_TOP_RIGHT);
+    ui_style_textarea(ui_DisplayBacklightMax);
+    lv_textarea_set_placeholder_text(ui_DisplayBacklightMax, "typical 1 (max light)");
+    ui_DisplayBacklightMin = lv_textarea_create(ui_Display);
+    ui_style_position(ui_DisplayBacklightMin, 0, 95, 25, lv_pct(80), LV_ALIGN_TOP_RIGHT);
+    ui_style_textarea(ui_DisplayBacklightMin);
+    lv_textarea_set_placeholder_text(ui_DisplayBacklightMin, "typical 255 (no light)");
 
     // Activate the keyboard in the first input field
     lv_keyboard_set_textarea(ui_Keyboard, ui_MqttHost);

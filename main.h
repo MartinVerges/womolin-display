@@ -5,6 +5,7 @@
 using namespace std;
 
 int nav_screen = 1;
+
 bool display_sleep = false;
 uint8_t display_brightness = 0;
 
@@ -22,6 +23,13 @@ struct config_t {
   string gas_bottle1_topic;
   bool gas_bottle2_enabled;
   string gas_bottle2_topic;
+  bool display_backlight_dim_enabled;
+  uint16_t display_backlight_dim_timeout_sec;
+  uint8_t display_backlight_max;
+  uint8_t display_backlight_min;
+  uint8_t relay_1_gpio;
+  uint8_t relay_2_gpio;
+  uint8_t relay_3_gpio;
 };
 void load_configuration();
 bool save_configuration();

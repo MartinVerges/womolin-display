@@ -78,6 +78,8 @@ received_mqtt_data_t mqtt_data_cache;
  *   GLOBAL FUNCTIONS
  **********************/
 void change_display_brightness(uint8_t val) {
+  printf("change_display_brightness(%d)\n", val);
+
   if (display_brightness != val) {
     char charValue[3];
     sprintf(charValue, "%d", val);
@@ -95,6 +97,7 @@ int main(int argc, char **argv) {
 
   // Load last known configuration
   load_configuration();
+  change_display_brightness(configuration.display_backlight_max);
 
   // Initialize LVGL
   lv_init();
@@ -107,13 +110,13 @@ int main(int argc, char **argv) {
   if (bcm2835_init() ) {
     use_bcm2835 = true;
     printf("[BCM2835] Init success");
-    bcm2835_gpio_fsel(Relay_Ch1, BCM2835_GPIO_FSEL_OUTP);
-    bcm2835_gpio_fsel(Relay_Ch2, BCM2835_GPIO_FSEL_OUTP);
-    bcm2835_gpio_fsel(Relay_Ch3, BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_fsel(configuration.relay_1_gpio, BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_fsel(configuration.relay_2_gpio, BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_fsel(configuration.relay_3_gpio, BCM2835_GPIO_FSEL_OUTP);
     bcm2835_delay(100); // on boot, release all relais
-    bcm2835_gpio_write(Relay_Ch1, HIGH);
-    bcm2835_gpio_write(Relay_Ch2, HIGH);
-    bcm2835_gpio_write(Relay_Ch3, HIGH);
+    bcm2835_gpio_write(configuration.relay_1_gpio, HIGH);
+    bcm2835_gpio_write(configuration.relay_2_gpio, HIGH);
+    bcm2835_gpio_write(configuration.relay_3_gpio, HIGH);
   }
 
   // Allways allocate the memory on startup. We will never free it up again!
@@ -135,12 +138,12 @@ int main(int argc, char **argv) {
     lv_timer_handler();
     usleep(5000);
 
-    // Normal operation (no sleep) in < 5 sec inactivity
-    if (lv_disp_get_inactive_time(NULL) < 5000) {
+    // Normal operation (no sleep) 
+    if (lv_disp_get_inactive_time(NULL) < configuration.display_backlight_dim_timeout_sec*1000) {
       display_sleep = false;
     } else { // Sleep on inactivity
       display_sleep = true;
-      change_display_brightness(255);
+      if (configuration.display_backlight_dim_enabled) change_display_brightness(configuration.display_backlight_min);
       // 1 = 100%  255 = 0% brightness in /sys/waveshare/rpi_backlight/brightness
     }
   }
@@ -155,8 +158,8 @@ void my_input_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data) {
   #if USE_EVDEV
     evdev_read(indev_drv, data);
   #endif
-  if(display_sleep && data->state == LV_INDEV_STATE_PRESSED) {
-    change_display_brightness(10);
+  if(configuration.display_backlight_dim_enabled && display_sleep && data->state == LV_INDEV_STATE_PRESSED) {
+    change_display_brightness(configuration.display_backlight_max);
   }
 }
 
@@ -176,7 +179,10 @@ bool save_configuration() {
   doc["gas_bottle1_topic"] = configuration.gas_bottle1_topic;
   doc["gas_bottle2_enabled"] = configuration.gas_bottle2_enabled;
   doc["gas_bottle2_topic"] = configuration.gas_bottle2_topic;
-
+  doc["display_backlight_dim_enabled"] = configuration.display_backlight_dim_enabled;
+  doc["display_backlight_dim_timeout_sec"] = configuration.display_backlight_dim_timeout_sec;
+  doc["display_backlight_max"] = configuration.display_backlight_max;
+  doc["display_backlight_min"] = configuration.display_backlight_min;
   if (serializeJsonPretty(doc, fs) == 0) {
     perror("Failed to write to file!");
     fs.close();
@@ -207,6 +213,16 @@ void load_configuration() {
   configuration.gas_bottle1_topic = doc["gas_bottle1_topic"] | "gas/bottle1";
   configuration.gas_bottle2_enabled = doc["gas_bottle2_enabled"] | false;
   configuration.gas_bottle2_topic = doc["gas_bottle2_topic"] | "gas/bottle2";
+
+  configuration.display_backlight_dim_enabled = doc["display_backlight_dim_enabled"] | true;
+  configuration.display_backlight_dim_timeout_sec = doc["display_backlight_dim_timeout_sec"] | 15;
+  configuration.display_backlight_max = doc["display_backlight_max"] | 1;
+  configuration.display_backlight_min = doc["display_backlight_min"] | 255;
+
+  configuration.relay_1_gpio = doc["relay_1_gpio"] | 26;
+  configuration.relay_2_gpio = doc["relay_2_gpio"] | 20;
+  configuration.relay_3_gpio = doc["relay_3_gpio"] | 21;
+
   fs.close();
 }
 
@@ -260,12 +276,12 @@ void hal_init_raspberry(void) {
 }
 
 void display_update_clock(lv_timer_t *timer) {
-	time_t t;
+  time_t t;
         t = time(NULL);
         struct tm tm;
-	tm = *localtime(&t);
-	lv_label_set_text_fmt(ui_TimeIndicator, "%02d:%02d:%02d", tm.tm_hour, tm.tm_min, tm.tm_sec);
-	lv_label_set_text_fmt(ui_DateIndicator, "%02d.%02d.%04d", tm.tm_mday, tm.tm_mon+1, tm.tm_year+1900);
+  tm = *localtime(&t);
+  lv_label_set_text_fmt(ui_TimeIndicator, "%02d:%02d:%02d", tm.tm_hour, tm.tm_min, tm.tm_sec);
+  lv_label_set_text_fmt(ui_DateIndicator, "%02d.%02d.%04d", tm.tm_mday, tm.tm_mon+1, tm.tm_year+1900);
 }
 
 /*********************
@@ -361,37 +377,37 @@ void mqtt_publish_callback(void** unused, struct mqtt_response_publish *publishe
  *   LVGL related
  *********************/
 void NAV_BTTN_ENABLE(lv_obj_t * bttn, lv_obj_t * icon) {
-	lv_obj_set_style_bg_color(bttn, lv_color_hex(0x2DAB66), LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_bg_color(bttn, lv_color_hex(0x2DAB66), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_bg_grad_dir(bttn, LV_GRAD_DIR_VER, LV_PART_MAIN | LV_STATE_DEFAULT);
-	lv_obj_set_style_img_recolor(icon, lv_color_hex(0x141414), LV_PART_MAIN | LV_STATE_DEFAULT);
-	lv_obj_set_style_img_recolor_opa(icon, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_img_recolor(icon, lv_color_hex(0x141414), LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_img_recolor_opa(icon, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 }
 void NAV_BTTN_DISABLE(lv_obj_t * bttn, lv_obj_t * icon) {
-	lv_obj_set_style_bg_color(bttn, lv_color_hex(0x141414), LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_bg_color(bttn, lv_color_hex(0x141414), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_bg_grad_dir(bttn, LV_GRAD_DIR_NONE, LV_PART_MAIN | LV_STATE_DEFAULT);
-	lv_obj_set_style_img_recolor(icon, lv_color_hex(0x888888), LV_PART_MAIN | LV_STATE_DEFAULT);
-	lv_obj_set_style_img_recolor_opa(icon, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_img_recolor(icon, lv_color_hex(0x888888), LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_img_recolor_opa(icon, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 }
 
 void ONCLICK_NAV_1(lv_event_t * e) {
-	(void)e;
+  (void)e;
   nav_screen = 1;
-	NAV_BTTN_ENABLE(ui_NavButton1, ui_NavIcon1);
-	NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
-	NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
-	NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
-	NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
+  NAV_BTTN_ENABLE(ui_NavButton1, ui_NavIcon1);
+  NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
+  NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
+  NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
+  NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
   refresh_levels();
 }
 
 void ONCLICK_NAV_2(lv_event_t * e) {  // Tanklevel
-	(void)e;
+  (void)e;
   nav_screen = 2;
-	NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
-	NAV_BTTN_ENABLE(ui_NavButton2, ui_NavIcon2);
-	NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
-	NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
-	NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
+  NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
+  NAV_BTTN_ENABLE(ui_NavButton2, ui_NavIcon2);
+  NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
+  NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
+  NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
 
   lv_label_set_text(ui_Level1Label, "FRESH WATER");
   lv_label_set_text(ui_Level2Label, "GREY WATER");
@@ -406,24 +422,24 @@ void ONCLICK_NAV_2(lv_event_t * e) {  // Tanklevel
 }
 
 void ONCLICK_NAV_3(lv_event_t * e) {  // Battery
-	(void)e;
+  (void)e;
   nav_screen = 3;
-	NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
-	NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
-	NAV_BTTN_ENABLE(ui_NavButton3, ui_NavIcon3);
-	NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
-	NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
+  NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
+  NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
+  NAV_BTTN_ENABLE(ui_NavButton3, ui_NavIcon3);
+  NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
+  NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
   refresh_levels();
 }
 
 void ONCLICK_NAV_4(lv_event_t * e) {  // Gas
-	(void)e;
+  (void)e;
   nav_screen = 4;
-	NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
-	NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
-	NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
-	NAV_BTTN_ENABLE(ui_NavButton4, ui_NavIcon4);
-	NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
+  NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
+  NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
+  NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
+  NAV_BTTN_ENABLE(ui_NavButton4, ui_NavIcon4);
+  NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
 
   lv_label_set_text(ui_Level1Label, "BOTTLE 1");
   lv_label_set_text(ui_Level2Label, "BOTTLE 2");
@@ -438,32 +454,42 @@ void ONCLICK_NAV_4(lv_event_t * e) {  // Gas
 }
 
 void ONCLICK_NAV_5(lv_event_t * e) {
-	(void)e;
+  (void)e;
   nav_screen = 5;
-	NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
-	NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
-	NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
-	NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
-	NAV_BTTN_ENABLE(ui_NavButton5, ui_NavIcon5);
+  NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
+  NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
+  NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
+  NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
+  NAV_BTTN_ENABLE(ui_NavButton5, ui_NavIcon5);
   refresh_levels();
 }
  
 void PREFILL_SETTINGS(lv_event_t * e) {
-	(void)e;
-	lv_textarea_set_text(ui_MqttHost, configuration.mqtt_hostname.c_str());
-	lv_textarea_set_text(ui_MqttPort, configuration.mqtt_port.c_str());
-	lv_textarea_set_text(ui_MqttUsername, configuration.mqtt_user.c_str());
-	lv_textarea_set_text(ui_MqttPassword, configuration.mqtt_pass.c_str());
+  (void)e;
+  char charValue[32]; // temp to display numbers
+
+  lv_textarea_set_text(ui_MqttHost, configuration.mqtt_hostname.c_str());
+  lv_textarea_set_text(ui_MqttPort, configuration.mqtt_port.c_str());
+  lv_textarea_set_text(ui_MqttUsername, configuration.mqtt_user.c_str());
+  lv_textarea_set_text(ui_MqttPassword, configuration.mqtt_pass.c_str());
 
   switch_state(ui_EnableFreshWater, configuration.freshwater_enabled);
-	lv_textarea_set_text(ui_FreshWaterTopic, configuration.freshwater_topic.c_str());
+  lv_textarea_set_text(ui_FreshWaterTopic, configuration.freshwater_topic.c_str());
   switch_state(ui_EnableGreyWater, configuration.greywater_enabled);
-	lv_textarea_set_text(ui_GreyWaterTopic, configuration.greywater_topic.c_str());
+  lv_textarea_set_text(ui_GreyWaterTopic, configuration.greywater_topic.c_str());
 
   switch_state(ui_EnableGas1, configuration.gas_bottle1_enabled);
-	lv_textarea_set_text(ui_GasTopic1, configuration.gas_bottle1_topic.c_str());
+  lv_textarea_set_text(ui_GasTopic1, configuration.gas_bottle1_topic.c_str());
   switch_state(ui_EnableGas2, configuration.gas_bottle2_enabled);
-	lv_textarea_set_text(ui_GasTopic2, configuration.gas_bottle2_topic.c_str());
+  lv_textarea_set_text(ui_GasTopic2, configuration.gas_bottle2_topic.c_str());
+
+  switch_state(ui_DisplayDimEnable, configuration.display_backlight_dim_enabled);
+  sprintf(charValue, "%d", configuration.display_backlight_dim_timeout_sec);
+  lv_textarea_set_text(ui_DisplayDimTimeout, charValue); 
+  sprintf(charValue, "%d", configuration.display_backlight_max);
+  lv_textarea_set_text(ui_DisplayBacklightMax, charValue); 
+  sprintf(charValue, "%d", configuration.display_backlight_min);
+  lv_textarea_set_text(ui_DisplayBacklightMin, charValue); 
 }
 
 void CLOSE_SETTINGS(lv_event_t * e) {
@@ -482,6 +508,11 @@ void CLOSE_SETTINGS(lv_event_t * e) {
   configuration.gas_bottle2_enabled = lv_obj_has_state(ui_EnableGas2, LV_STATE_CHECKED);
   configuration.gas_bottle2_topic = lv_textarea_get_text(ui_GasTopic2);
 
+  configuration.display_backlight_dim_enabled = lv_obj_has_state(ui_DisplayDimEnable, LV_STATE_CHECKED);
+  configuration.display_backlight_dim_timeout_sec = atoi(lv_textarea_get_text(ui_DisplayDimTimeout));
+  configuration.display_backlight_max = atoi(lv_textarea_get_text(ui_DisplayBacklightMax));
+  configuration.display_backlight_min = atoi(lv_textarea_get_text(ui_DisplayBacklightMin));
+
   save_configuration();
   mqtt_force_reconnect();
   ONCLICK_NAV_2(e);
@@ -494,43 +525,43 @@ void LOADSCREEN(lv_event_t * e) {
 void RELAY_1(lv_event_t * e) {
   if (!use_bcm2835) return;  
   if (lv_obj_has_state(ui_Relay1, LV_STATE_CHECKED)) {
-    bcm2835_gpio_write(Relay_Ch1, LOW);
+    bcm2835_gpio_write(configuration.relay_1_gpio, LOW);
   } else {
-    bcm2835_gpio_write(Relay_Ch1, HIGH);
+    bcm2835_gpio_write(configuration.relay_1_gpio, HIGH);
   }
 }
 void RELAY_2(lv_event_t * e) {
   if (!use_bcm2835) return;
   if (lv_obj_has_state(ui_Relay2, LV_STATE_CHECKED)) {
-    bcm2835_gpio_write(Relay_Ch2, LOW);
+    bcm2835_gpio_write(configuration.relay_2_gpio, LOW);
   } else {
-    bcm2835_gpio_write(Relay_Ch2, HIGH);
+    bcm2835_gpio_write(configuration.relay_2_gpio, HIGH);
   }
 }
 void RELAY_3(lv_event_t * e) {
   if (!use_bcm2835) return;
   if (lv_obj_has_state(ui_Relay3, LV_STATE_CHECKED)) {
-    bcm2835_gpio_write(Relay_Ch3, LOW);
+    bcm2835_gpio_write(configuration.relay_3_gpio, LOW);
   } else {
-    bcm2835_gpio_write(Relay_Ch3, HIGH);
+    bcm2835_gpio_write(configuration.relay_3_gpio, HIGH);
   }
 }
 
 /*void NAV_BTTN_ACTIVE() {
-	lv_obj_t * parent;
-	lv_obj_t * child;
-	for(int i1 = 0; i1 < lv_obj_get_child_cnt(ui_Settings); i1++) {
-		parent  = lv_obj_get_child(ui_Settings, i1);
-		if (lv_obj_check_type(parent, &lv_obj_class)) {
-			for(int i2 = 0; i2 < lv_obj_get_child_cnt(parent); i2++) {
-				child = lv_obj_get_child(parent, i2);
-				if (lv_obj_check_type(child, &lv_switch_class)) {
-					LV_LOG_INFO("Activating Switch");
-					lv_obj_add_state(child, LV_STATE_CHECKED);
-				} else if (lv_obj_check_type(child, &lv_textarea_class)) {
-				}
-				
-			}
-		}
-	}
+  lv_obj_t * parent;
+  lv_obj_t * child;
+  for(int i1 = 0; i1 < lv_obj_get_child_cnt(ui_Settings); i1++) {
+    parent  = lv_obj_get_child(ui_Settings, i1);
+    if (lv_obj_check_type(parent, &lv_obj_class)) {
+      for(int i2 = 0; i2 < lv_obj_get_child_cnt(parent); i2++) {
+        child = lv_obj_get_child(parent, i2);
+        if (lv_obj_check_type(child, &lv_switch_class)) {
+          LV_LOG_INFO("Activating Switch");
+          lv_obj_add_state(child, LV_STATE_CHECKED);
+        } else if (lv_obj_check_type(child, &lv_textarea_class)) {
+        }
+        
+      }
+    }
+  }
 }*/
