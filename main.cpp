@@ -78,8 +78,6 @@ received_mqtt_data_t mqtt_data_cache;
  *   GLOBAL FUNCTIONS
  **********************/
 void change_display_brightness(uint8_t val) {
-  printf("change_display_brightness(%d)\n", val);
-
   if (display_brightness != val) {
     char charValue[3];
     sprintf(charValue, "%d", val);
@@ -277,8 +275,8 @@ void hal_init_raspberry(void) {
 
 void display_update_clock(lv_timer_t *timer) {
   time_t t;
-        t = time(NULL);
-        struct tm tm;
+  t = time(NULL);
+  struct tm tm;
   tm = *localtime(&t);
   lv_label_set_text_fmt(ui_TimeIndicator, "%02d:%02d:%02d", tm.tm_hour, tm.tm_min, tm.tm_sec);
   lv_label_set_text_fmt(ui_DateIndicator, "%02d.%02d.%04d", tm.tm_mday, tm.tm_mon+1, tm.tm_year+1900);
