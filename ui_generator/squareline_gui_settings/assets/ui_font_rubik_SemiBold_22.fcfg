@@ -1,0 +1,16 @@
+{
+  "codename": "rubik_SemiBold_22",
+  "ttf_path": "/assets/Rubik-SemiBold.ttf",
+  "bin_path": "/assets/ui_font_rubik_SemiBold_22.bin",
+  "c_path": "/assets/ui_font_rubik_SemiBold_22.c",
+  "cfg_path": "/assets/ui_font_rubik_SemiBold_22.fcfg",
+  "size": 22,
+  "bpp": 4,
+  "letters": 0,
+  "ranges": [
+    "0x20-0x7f"
+  ],
+  "symbols": "",
+  "customparams": "--no-compress --no-prefilter",
+  "uploaded": false
+}

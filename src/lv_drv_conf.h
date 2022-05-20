@@ -1,0 +1,1 @@
+lv_drv_conf.h.simulator
