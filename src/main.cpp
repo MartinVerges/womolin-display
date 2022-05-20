@@ -171,18 +171,27 @@ bool save_configuration() {
   doc["mqtt_port"] = configuration.mqtt_port;
   doc["mqtt_user"] = configuration.mqtt_user;
   doc["mqtt_pass"] = configuration.mqtt_pass;
+
   doc["freshwater_enabled"] = configuration.freshwater_enabled;
   doc["freshwater_topic"] = configuration.freshwater_topic;
   doc["greywater_enabled"] = configuration.greywater_enabled;
   doc["greywater_topic"] = configuration.greywater_topic;
+
   doc["gas_bottle1_enabled"] = configuration.gas_bottle1_enabled;
   doc["gas_bottle1_topic"] = configuration.gas_bottle1_topic;
   doc["gas_bottle2_enabled"] = configuration.gas_bottle2_enabled;
   doc["gas_bottle2_topic"] = configuration.gas_bottle2_topic;
+
+  doc["battery1_enabled"] = configuration.battery1_enabled;
+  doc["battery1_topic"] = configuration.battery1_topic;
+  doc["battery2_enabled"] = configuration.battery2_enabled;
+  doc["battery2_topic"] = configuration.battery2_topic;  
+
   doc["display_backlight_dim_enabled"] = configuration.display_backlight_dim_enabled;
   doc["display_backlight_dim_timeout_sec"] = configuration.display_backlight_dim_timeout_sec;
   doc["display_backlight_max"] = configuration.display_backlight_max;
   doc["display_backlight_min"] = configuration.display_backlight_min;
+
   if (serializeJsonPretty(doc, fs) == 0) {
     perror("Failed to write to file!");
     fs.close();
@@ -205,14 +214,21 @@ void load_configuration() {
   configuration.mqtt_port = doc["mqtt_port"] | "1883";
   configuration.mqtt_user = doc["mqtt_user"] | "";
   configuration.mqtt_pass = doc["mqtt_pass"] | "";
+
   configuration.freshwater_enabled = doc["freshwater_enabled"] | false;
   configuration.freshwater_topic = doc["freshwater_topic"] | "freshwater/tanklevel";
   configuration.greywater_enabled = doc["greywater_enabled"] | false;
   configuration.greywater_topic = doc["greywater_topic"] | "greywater/tanklevel";
+
   configuration.gas_bottle1_enabled = doc["gas_bottle1_enabled"] | false;
   configuration.gas_bottle1_topic = doc["gas_bottle1_topic"] | "gas/bottle1";
   configuration.gas_bottle2_enabled = doc["gas_bottle2_enabled"] | false;
   configuration.gas_bottle2_topic = doc["gas_bottle2_topic"] | "gas/bottle2";
+
+  configuration.battery1_enabled = doc["battery1_enabled"] | false;
+  configuration.battery1_topic = doc["battery1_topic"] | "battery1/soc";
+  configuration.battery2_enabled = doc["battery2_enabled"] | false;
+  configuration.battery2_topic = doc["battery2_topic"] | "battery2/soc";
 
   configuration.display_backlight_dim_enabled = doc["display_backlight_dim_enabled"] | true;
   configuration.display_backlight_dim_timeout_sec = doc["display_backlight_dim_timeout_sec"] | 15;
@@ -318,6 +334,8 @@ void mqtt_reconnect_client(struct mqtt_client* client, void **reconnect_state_vp
   if (configuration.greywater_enabled) mqtt_subscribe(client, configuration.greywater_topic.c_str(), 0);
   if (configuration.gas_bottle1_enabled) mqtt_subscribe(client, configuration.gas_bottle1_topic.c_str(), 0);
   if (configuration.gas_bottle2_enabled) mqtt_subscribe(client, configuration.gas_bottle2_topic.c_str(), 0);
+  if (configuration.battery1_enabled) mqtt_subscribe(client, configuration.battery1_topic.c_str(), 0);
+  if (configuration.battery2_enabled) mqtt_subscribe(client, configuration.battery2_topic.c_str(), 0);
 }
 
 void set_level(uint8_t num, int level) {
@@ -335,6 +353,10 @@ void refresh_levels() {
     case 2: // Water
       set_level(1, mqtt_data_cache.freshwater);
       set_level(2, mqtt_data_cache.greywater);
+    break;
+    case 3: // Battery
+      set_level(1, mqtt_data_cache.battery1);
+      set_level(2, mqtt_data_cache.battery2);
     break;
     case 4: // Gas
       set_level(1, mqtt_data_cache.gas_bottle1);
@@ -366,6 +388,10 @@ void mqtt_publish_callback(void** unused, struct mqtt_response_publish *publishe
     mqtt_data_cache.gas_bottle1 = atoi(application_message);
   } else if (strcmp(topic_name, configuration.gas_bottle2_topic.c_str()) == 0) {
     mqtt_data_cache.gas_bottle2 = atoi(application_message);
+  } else if (strcmp(topic_name, configuration.battery1_topic.c_str()) == 0) {
+    mqtt_data_cache.battery1 = atoi(application_message);
+  } else if (strcmp(topic_name, configuration.battery2_topic.c_str()) == 0) {
+    mqtt_data_cache.battery2 = atoi(application_message);
   }
 
   refresh_levels();
@@ -429,6 +455,16 @@ void ONCLICK_NAV_3(lv_event_t * e) {  // Battery
   NAV_BTTN_ENABLE(ui_NavButton3, ui_NavIcon3);
   NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
   NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
+
+  lv_label_set_text(ui_Level1Label, "BATTERY 1");
+  lv_label_set_text(ui_Level2Label, "BATTERY 2");
+  lv_img_set_src(ui_Level1Icon, &ui_img_icon_battery_large_png);
+  lv_img_set_src(ui_Level2Icon, &ui_img_icon_battery_large_png);
+
+  if (configuration.battery1_enabled) lv_obj_clear_flag(ui_LevelInfo1, LV_OBJ_FLAG_HIDDEN);
+  else lv_obj_add_flag(ui_LevelInfo1, LV_OBJ_FLAG_HIDDEN);
+  if (configuration.battery2_enabled) lv_obj_clear_flag(ui_LevelInfo2, LV_OBJ_FLAG_HIDDEN);
+  else lv_obj_add_flag(ui_LevelInfo2, LV_OBJ_FLAG_HIDDEN);
   refresh_levels();
 }
 
@@ -483,6 +519,11 @@ void PREFILL_SETTINGS(lv_event_t * e) {
   switch_state(ui_EnableGas2, configuration.gas_bottle2_enabled);
   lv_textarea_set_text(ui_GasTopic2, configuration.gas_bottle2_topic.c_str());
 
+  switch_state(ui_EnableBattery1, configuration.battery1_enabled);
+  lv_textarea_set_text(ui_BatteryTopic1, configuration.battery1_topic.c_str());
+  switch_state(ui_EnableBattery2, configuration.battery2_enabled);
+  lv_textarea_set_text(ui_BatteryTopic2, configuration.battery2_topic.c_str());
+  
   switch_state(ui_DisplayDimEnable, configuration.display_backlight_dim_enabled);
   sprintf(charValue, "%d", configuration.display_backlight_dim_timeout_sec);
   lv_textarea_set_text(ui_DisplayDimTimeout, charValue); 
@@ -507,6 +548,11 @@ void CLOSE_SETTINGS(lv_event_t * e) {
   configuration.gas_bottle1_topic = lv_textarea_get_text(ui_GasTopic1);
   configuration.gas_bottle2_enabled = lv_obj_has_state(ui_EnableGas2, LV_STATE_CHECKED);
   configuration.gas_bottle2_topic = lv_textarea_get_text(ui_GasTopic2);
+
+  configuration.battery1_enabled = lv_obj_has_state(ui_EnableBattery1, LV_STATE_CHECKED);
+  configuration.battery1_topic = lv_textarea_get_text(ui_BatteryTopic1);
+  configuration.battery2_enabled = lv_obj_has_state(ui_EnableBattery2, LV_STATE_CHECKED);
+  configuration.battery2_topic = lv_textarea_get_text(ui_BatteryTopic2);
 
   configuration.display_backlight_dim_enabled = lv_obj_has_state(ui_DisplayDimEnable, LV_STATE_CHECKED);
   configuration.display_backlight_dim_timeout_sec = atoi(lv_textarea_get_text(ui_DisplayDimTimeout));

@@ -67,6 +67,12 @@ extern lv_obj_t * ui_EnableGas1;
 extern lv_obj_t * ui_EnableGas2;
 extern lv_obj_t * ui_GasTopic1;
 extern lv_obj_t * ui_GasTopic2;
+extern lv_obj_t * ui_BatterySensors;
+extern lv_obj_t * ui_BatteryLabel1;
+extern lv_obj_t * ui_EnableBattery1;
+extern lv_obj_t * ui_EnableBattery2;
+extern lv_obj_t * ui_BatteryTopic1;
+extern lv_obj_t * ui_BatteryTopic2;
 extern lv_obj_t * ui_Display;
 extern lv_obj_t * ui_DisplayLabel;
 extern lv_obj_t * ui_DisplayDimEnable;
@@ -104,6 +110,7 @@ LV_IMG_DECLARE(ui_img_icon_settings_png)        // assets/icon_settings.png
 LV_IMG_DECLARE(ui_img_icon_weather_png)         // assets/icon_weather.png
 LV_IMG_DECLARE(ui_img_icon_water_png)           // assets/icon_water.png
 LV_IMG_DECLARE(ui_img_icon_battery_png)         // assets/icon_battery.png
+LV_IMG_DECLARE(ui_img_icon_battery_large_png)         // assets/icon_battery_large.png
 LV_IMG_DECLARE(ui_img_icon_gas_png)             // assets/icon_gas.png
 LV_IMG_DECLARE(ui_img_icon_gas_large_png);      // assets/icon_gas_large.png
 LV_IMG_DECLARE(ui_img_icon_temperature_png)     // assets/icon_temperature.png

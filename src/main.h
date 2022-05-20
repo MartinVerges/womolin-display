@@ -16,18 +16,27 @@ struct config_t {
   string mqtt_port;
   string mqtt_user;
   string mqtt_pass;
+
   bool freshwater_enabled;
   string freshwater_topic;
   bool greywater_enabled;
   string greywater_topic;
+
   bool gas_bottle1_enabled;
   string gas_bottle1_topic;
   bool gas_bottle2_enabled;
   string gas_bottle2_topic;
+
+  bool battery1_enabled;
+  string battery1_topic;
+  bool battery2_enabled;
+  string battery2_topic;
+
   bool display_backlight_dim_enabled;
   uint16_t display_backlight_dim_timeout_sec;
   uint8_t display_backlight_max;
   uint8_t display_backlight_min;
+
   uint8_t relay_1_gpio;
   uint8_t relay_2_gpio;
   uint8_t relay_3_gpio;
@@ -46,8 +55,12 @@ void refresh_levels();
 struct received_mqtt_data_t {
   uint8_t freshwater;
   uint8_t greywater;
+
   uint8_t gas_bottle1;
   uint8_t gas_bottle2;
+
+  uint8_t battery1;
+  uint8_t battery2;
 };
 
 struct mqtt_buffer_t {

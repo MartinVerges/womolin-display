@@ -57,6 +57,12 @@ lv_obj_t * ui_EnableGas1;
 lv_obj_t * ui_EnableGas2;
 lv_obj_t * ui_GasTopic1;
 lv_obj_t * ui_GasTopic2;
+lv_obj_t * ui_BatterySensors;
+lv_obj_t * ui_BatteryLabel1;
+lv_obj_t * ui_EnableBattery1;
+lv_obj_t * ui_EnableBattery2;
+lv_obj_t * ui_BatteryTopic1;
+lv_obj_t * ui_BatteryTopic2;
 lv_obj_t * ui_Display;
 lv_obj_t * ui_DisplayLabel;
 lv_obj_t * ui_DisplayDimEnable;
@@ -280,7 +286,6 @@ void ui_MainScreen_screen_init(void) {
     lv_obj_set_style_pad_bottom(ui_Content, 20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     // ui_LevelInfo1
-
     ui_LevelInfo1 = lv_obj_create(ui_Content);
 
     lv_obj_set_width(ui_LevelInfo1, 280);
@@ -303,7 +308,6 @@ void ui_MainScreen_screen_init(void) {
     lv_obj_set_style_pad_bottom(ui_LevelInfo1, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     // ui_Level1
-
     ui_Level1 = lv_bar_create(ui_LevelInfo1);
     lv_bar_set_range(ui_Level1, 0, 100);
 
@@ -328,7 +332,6 @@ void ui_MainScreen_screen_init(void) {
     lv_obj_set_style_bg_grad_dir(ui_Level1, LV_GRAD_DIR_VER, LV_PART_INDICATOR | LV_STATE_DEFAULT);
 
     // ui_Level1Mark25
-
     ui_Level1Mark25 = lv_obj_create(ui_Level1);
 
     lv_obj_set_height(ui_Level1Mark25, 1);
@@ -342,7 +345,6 @@ void ui_MainScreen_screen_init(void) {
                       LV_OBJ_FLAG_SCROLL_MOMENTUM | LV_OBJ_FLAG_SCROLL_CHAIN);
 
     // ui_Level1Mark50
-
     ui_Level1Mark50 = lv_obj_create(ui_Level1);
 
     lv_obj_set_height(ui_Level1Mark50, 1);
@@ -356,7 +358,6 @@ void ui_MainScreen_screen_init(void) {
                       LV_OBJ_FLAG_SCROLL_MOMENTUM | LV_OBJ_FLAG_SCROLL_CHAIN);
 
     // ui_Level1Mark75
-
     ui_Level1Mark75 = lv_obj_create(ui_Level1);
 
     lv_obj_set_height(ui_Level1Mark75, 1);
@@ -370,7 +371,6 @@ void ui_MainScreen_screen_init(void) {
                       LV_OBJ_FLAG_SCROLL_MOMENTUM | LV_OBJ_FLAG_SCROLL_CHAIN);
 
     // ui_Level1Icon
-
     ui_Level1Icon = lv_img_create(ui_LevelInfo1);
     lv_img_set_src(ui_Level1Icon, &ui_img_icon_water_content_clean_png);
 
@@ -387,7 +387,6 @@ void ui_MainScreen_screen_init(void) {
     lv_obj_set_style_opa(ui_Level1Icon, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     // ui_Level1State
-
     ui_Level1State = lv_label_create(ui_LevelInfo1);
 
     lv_obj_set_width(ui_Level1State, 160);
@@ -408,7 +407,6 @@ void ui_MainScreen_screen_init(void) {
     lv_obj_set_style_opa(ui_Level1State, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     // ui_Level1Label
-
     ui_Level1Label = lv_label_create(ui_LevelInfo1);
 
     lv_obj_set_width(ui_Level1Label, 160);
@@ -430,7 +428,6 @@ void ui_MainScreen_screen_init(void) {
     lv_obj_set_style_opa(ui_Level1Label, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     // ui_LevelInfo2
-
     ui_LevelInfo2 = lv_obj_create(ui_Content);
 
     lv_obj_set_width(ui_LevelInfo2, 280);
@@ -453,7 +450,6 @@ void ui_MainScreen_screen_init(void) {
     lv_obj_set_style_pad_bottom(ui_LevelInfo2, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     // ui_Level2
-
     ui_Level2 = lv_bar_create(ui_LevelInfo2);
     lv_bar_set_range(ui_Level2, 0, 100);
 
@@ -478,7 +474,6 @@ void ui_MainScreen_screen_init(void) {
     lv_obj_set_style_bg_grad_dir(ui_Level2, LV_GRAD_DIR_VER, LV_PART_INDICATOR | LV_STATE_DEFAULT);
 
     // ui_Level2Mark25
-
     ui_Level2Mark25 = lv_obj_create(ui_Level2);
 
     lv_obj_set_height(ui_Level2Mark25, 1);
@@ -492,7 +487,6 @@ void ui_MainScreen_screen_init(void) {
                       LV_OBJ_FLAG_SCROLL_MOMENTUM | LV_OBJ_FLAG_SCROLL_CHAIN);
 
     // ui_Level2Mark50
-
     ui_Level2Mark50 = lv_obj_create(ui_Level2);
 
     lv_obj_set_height(ui_Level2Mark50, 1);
@@ -506,7 +500,6 @@ void ui_MainScreen_screen_init(void) {
                       LV_OBJ_FLAG_SCROLL_MOMENTUM | LV_OBJ_FLAG_SCROLL_CHAIN);
 
     // ui_Level2Mark75
-
     ui_Level2Mark75 = lv_obj_create(ui_Level2);
 
     lv_obj_set_height(ui_Level2Mark75, 1);
@@ -520,7 +513,6 @@ void ui_MainScreen_screen_init(void) {
                       LV_OBJ_FLAG_SCROLL_MOMENTUM | LV_OBJ_FLAG_SCROLL_CHAIN);
 
     // ui_Level2Icon
-
     ui_Level2Icon = lv_img_create(ui_LevelInfo2);
     lv_img_set_src(ui_Level2Icon, &ui_img_icon_water_content_dirty_png);
 
@@ -537,7 +529,6 @@ void ui_MainScreen_screen_init(void) {
     lv_obj_set_style_opa(ui_Level2Icon, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     // ui_Level2State
-
     ui_Level2State = lv_label_create(ui_LevelInfo2);
 
     lv_obj_set_width(ui_Level2State, 160);
@@ -579,7 +570,6 @@ void ui_MainScreen_screen_init(void) {
     lv_obj_set_style_opa(ui_Level2Label, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     // ui_DateIndicator
-
     ui_DateIndicator = lv_label_create(ui_Content);
 
     lv_obj_set_width(ui_DateIndicator, LV_SIZE_CONTENT);
@@ -599,7 +589,6 @@ void ui_MainScreen_screen_init(void) {
     lv_obj_set_style_text_font(ui_DateIndicator, &ui_font_rubik_light_18, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     // ui_TimeIndicator
-
     ui_TimeIndicator = lv_label_create(ui_Content);
 
     lv_obj_set_width(ui_TimeIndicator, LV_SIZE_CONTENT);
@@ -621,7 +610,6 @@ void ui_MainScreen_screen_init(void) {
     lv_obj_set_style_text_font(ui_TimeIndicator, &ui_font_rubik_light_40, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     // ui_ButtonSettingsOpen
-
     ui_ButtonSettingsOpen = lv_imgbtn_create(ui_Content);
     lv_imgbtn_set_src(ui_ButtonSettingsOpen, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_icon_settings_png, NULL);
 
@@ -837,10 +825,31 @@ void ui_Settings_screen_init(void) {
     ui_style_textarea(ui_GasTopic2);
     lv_textarea_set_placeholder_text(ui_GasTopic2, "identifier / mqtt topic");
 
+    // ui_Batterylevel
+    ui_BatterySensors = lv_obj_create(ui_Settings);
+    ui_style_group(ui_BatterySensors);
+    ui_style_position(ui_BatterySensors, 380, 150, 90, 302, LV_ALIGN_TOP_LEFT);
+    ui_BatteryLabel1 = lv_label_create(ui_BatterySensors);
+    ui_style_label(ui_BatteryLabel1, "Battery state of charge", 0, 0);
+    ui_EnableBattery1 = lv_switch_create(ui_BatterySensors);
+    ui_style_position(ui_EnableBattery1, 0, 25, 25, 50, LV_ALIGN_TOP_LEFT);
+    ui_style_switch(ui_EnableBattery1);
+    ui_EnableBattery2 = lv_switch_create(ui_BatterySensors);
+    ui_style_position(ui_EnableBattery2, 0, 60, 25, 50, LV_ALIGN_TOP_LEFT);
+    ui_style_switch(ui_EnableBattery2);
+    ui_BatteryTopic1 = lv_textarea_create(ui_BatterySensors);
+    ui_style_position(ui_BatteryTopic1, 0, 25, 25, lv_pct(80), LV_ALIGN_TOP_RIGHT);
+    ui_style_textarea(ui_BatteryTopic1);
+    lv_textarea_set_placeholder_text(ui_BatteryTopic1, "identifier / mqtt topic");
+    ui_BatteryTopic2 = lv_textarea_create(ui_BatterySensors);
+    ui_style_position(ui_BatteryTopic2, 0, 60, 25, lv_pct(80), LV_ALIGN_TOP_RIGHT);
+    ui_style_textarea(ui_BatteryTopic2);
+    lv_textarea_set_placeholder_text(ui_BatteryTopic2, "identifier / mqtt topic");
+
     // ui_Display
     ui_Display = lv_obj_create(ui_Settings);
     ui_style_group(ui_Display);
-    ui_style_position(ui_Display, 380, 160, 130, 302, LV_ALIGN_TOP_LEFT);
+    ui_style_position(ui_Display, 380, 250, 130, 302, LV_ALIGN_TOP_LEFT);
     ui_DisplayDimEnable = lv_switch_create(ui_Display);
     ui_style_position(ui_DisplayDimEnable, 0, 25, 25, 50, LV_ALIGN_TOP_LEFT);
     ui_style_switch(ui_DisplayDimEnable);
