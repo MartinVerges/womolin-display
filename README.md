@@ -24,12 +24,13 @@ Please note: at the current state, this Project only works on 1024x600 pixel and
 
 ## Installation
 
-If you want to give it a try, take a look at the [INSTALL.md](https://github.com/MartinVerges/rv-hud/blob/main/INSTALL.md) documentation.
+If you want to give it a try, take a look at the [INSTALL.md](https://github.com/MartinVerges/womolin-display/blob/main/INSTALL.md) documentation.
 
 ## Screenshots
 
 <img src="screenshots/mainscreen.png?raw=true" alt="Main Screen" width="50%">
 <img src="screenshots/settings.png?raw=true" alt="Settings" width="50%">
+<img src="screenshots/batteries.png?raw=true" alt="Battery state" width="50%">
 <img src="screenshots/gas_level.png?raw=true" alt="Gas level" width="50%">
 
 ## Prepare simulator
@@ -40,7 +41,8 @@ In order to run it on a simulator, you have to change the Symlink of `lv_conf.h`
 git update-index --skip-worktree lv_conf.h lv_drv_conf.h
 ln -sf lv_conf.h.simulator lv_conf.h
 ln -sf lv_drv_conf.h.simulator lv_drv_conf.h
-cmake . && make clean
+mkdir -p build && cd build
+cmake -DCMAKE_BUILD_TYPE=Debug .. && cmake --build .
 ```
 
 To run it on the Raspberry PI, please use:
@@ -48,7 +50,8 @@ To run it on the Raspberry PI, please use:
 git update-index --skip-worktree lv_conf.h lv_drv_conf.h
 ln -sf lv_conf.h.raspberry lv_conf.h
 ln -sf lv_drv_conf.h.raspberry lv_drv_conf.h
-cmake . && make clean
+mkdir -p build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build .
 ```
 
 ## License
@@ -63,4 +66,3 @@ If not, see <http://creativecommons.org/licenses/by-nc-sa/4.0/>.
 ### Design
 
 A special thanks to the excellent designer [Florian Koczy](https://koczy-design.de), who developed the design for this project!
-
