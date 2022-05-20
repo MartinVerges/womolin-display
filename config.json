@@ -10,5 +10,9 @@
   "gas_bottle1_enabled": true,
   "gas_bottle1_topic": "gas/bottle1",
   "gas_bottle2_enabled": true,
-  "gas_bottle2_topic": "gas/bottle2"
+  "gas_bottle2_topic": "gas/bottle2",
+  "display_backlight_dim_enabled": true,
+  "display_backlight_dim_timeout_sec": 15,
+  "display_backlight_max": 1,
+  "display_backlight_min": 255
 }
