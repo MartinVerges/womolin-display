@@ -39,8 +39,13 @@
  *   BCM2835
  *********************/
 #include "bcm2835.h"
-bool use_bcm2835 = false;
-
+#if USE_SDL
+  // can't simulate that on my desk
+  bool use_bcm2835 = false;
+#else
+  // enable with the RPI
+  bool use_bcm2835 = true;
+#endif
 /*********************
  *   INCLUDES
  *********************/
@@ -107,8 +112,7 @@ int main(int argc, char **argv) {
 
   ui_init();
 
-  if (bcm2835_init() ) {
-    use_bcm2835 = true;
+  if (use_bcm2835 && bcm2835_init() ) {
     printf("[BCM2835] Init success");
     bcm2835_gpio_fsel(configuration.relay_1_gpio, BCM2835_GPIO_FSEL_OUTP);
     bcm2835_gpio_fsel(configuration.relay_2_gpio, BCM2835_GPIO_FSEL_OUTP);
@@ -192,6 +196,10 @@ bool save_configuration() {
   doc["display_backlight_max"] = configuration.display_backlight_max;
   doc["display_backlight_min"] = configuration.display_backlight_min;
 
+  doc["relay_1_gpio"] = configuration.relay_1_gpio;
+  doc["relay_2_gpio"] = configuration.relay_2_gpio;
+  doc["relay_3_gpio"] = configuration.relay_3_gpio;
+
   if (serializeJsonPretty(doc, fs) == 0) {
     perror("Failed to write to file!");
     fs.close();
@@ -202,6 +210,7 @@ bool save_configuration() {
 }
 
 void load_configuration() {
+  cout << "Loading config file: " << config_filename << endl;
   std::fstream fs;
   fs.open (config_filename, std::fstream::in);
 
@@ -531,6 +540,13 @@ void PREFILL_SETTINGS(lv_event_t * e) {
   lv_textarea_set_text(ui_DisplayBacklightMax, charValue); 
   sprintf(charValue, "%d", configuration.display_backlight_min);
   lv_textarea_set_text(ui_DisplayBacklightMin, charValue); 
+
+  sprintf(charValue, "%d", configuration.relay_1_gpio);
+  lv_textarea_set_text(ui_Relay1GPIO, charValue); 
+  sprintf(charValue, "%d", configuration.relay_2_gpio);
+  lv_textarea_set_text(ui_Relay2GPIO, charValue); 
+  sprintf(charValue, "%d", configuration.relay_3_gpio);
+  lv_textarea_set_text(ui_Relay3GPIO, charValue); 
 }
 
 void CLOSE_SETTINGS(lv_event_t * e) {
@@ -558,6 +574,10 @@ void CLOSE_SETTINGS(lv_event_t * e) {
   configuration.display_backlight_dim_timeout_sec = atoi(lv_textarea_get_text(ui_DisplayDimTimeout));
   configuration.display_backlight_max = atoi(lv_textarea_get_text(ui_DisplayBacklightMax));
   configuration.display_backlight_min = atoi(lv_textarea_get_text(ui_DisplayBacklightMin));
+
+  configuration.relay_1_gpio = atoi(lv_textarea_get_text(ui_Relay1GPIO));
+  configuration.relay_2_gpio = atoi(lv_textarea_get_text(ui_Relay2GPIO));
+  configuration.relay_3_gpio = atoi(lv_textarea_get_text(ui_Relay3GPIO));
 
   save_configuration();
   mqtt_force_reconnect();

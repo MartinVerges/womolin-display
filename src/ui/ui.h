@@ -86,6 +86,13 @@ extern lv_obj_t * ui_Relay2;
 extern lv_obj_t * ui_Relay2Label;
 extern lv_obj_t * ui_Relay3;
 extern lv_obj_t * ui_Relay3Label;
+extern lv_obj_t * ui_RelaysSettings;
+extern lv_obj_t * ui_RelaysLabel;
+extern lv_obj_t * ui_Relay1GPIO;
+extern lv_obj_t * ui_Relay2GPIO;
+extern lv_obj_t * ui_Relay3GPIO;
+
+
 
 void NAV_BTTN_ENABLE(lv_obj_t * bttn, lv_obj_t * icon);
 void NAV_BTTN_DISABLE(lv_obj_t * bttn, lv_obj_t * icon);
