@@ -1,8 +1,8 @@
-# rv-hud
+# WomoLIN Display
 
 This project should result in a control unit of a mobile home. The aim of the project is to display and control the sensors and functions of the motorhome centrally via a touch panel.
 
-The whole thing will work together with WOMO\_LIN to ensure the greatest possible compatibility with different manufacturers.
+The whole thing will work together with WomoLIN to ensure the greatest possible compatibility with different manufacturers.
 
 ## Current State
 
