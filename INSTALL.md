@@ -65,8 +65,8 @@ Now that the touchscreen is ready, we can install the GUI.
 ```
 apt -y install cmake extra-cmake-modules cmake-extras libsdl2-dev
 cd /usr/src/
-git clone --recurse-submodules git@github.com:MartinVerges/rv-hud.git
-cd rv-hud/
+git clone --recurse-submodules https://github.com/MartinVerges/womolin-display.git
+cd womolin-display/
 cmake -DCMAKE_BUILD_TYPE=Release .
 make
 make install
