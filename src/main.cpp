@@ -23,11 +23,10 @@
 #include "ui/ui.h"
 
 /*********************
- *   MQTT-c
+ *   Mosquitto MQTT
  *********************/
-#include <mqtt.h>
-#include "posix_sockets.h"
-#include <stdlib.h>
+struct mosquitto *mosq;
+bool mqtt_is_connected = false;
 
 /*********************
  *   ArduinoJson
@@ -59,17 +58,11 @@
 
 using namespace std;
 
-// MQTT-c
-struct mqtt_client mqtt;
-struct mqtt_buffer_t mqtt_state;
-static lv_timer_t * timer_mqtt_sync;
-
 // LVGL
 static lv_color_t buf[DISP_HOR_RES * DISP_VER_RES];
 static lv_disp_draw_buf_t disp_draw_buf;
 static lv_disp_drv_t disp_drv;
 static lv_indev_drv_t indev_drv;
-static lv_timer_t * timer_upd_clock;
 #if USE_EVDEV
 static lv_indev_t * indev_touchpad;
 #endif
@@ -82,6 +75,18 @@ received_mqtt_data_t mqtt_data_cache;
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
+
+void show_warning(const char * message) {
+  lv_label_set_text(ui_WarnMessage, message);
+  _ui_flag_modify(ui_WarnMessage, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
+}
+
+void hide_warning() { 
+  if (lv_obj_is_visible(ui_WarnMessage)) {
+    _ui_flag_modify(ui_WarnMessage, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
+  }
+}
+
 void change_display_brightness(uint8_t val) {
   if (display_brightness != val) {
     char charValue[3];
@@ -96,9 +101,80 @@ void change_display_brightness(uint8_t val) {
   }
 }
 
+void on_mqtt_connect(struct mosquitto *mosq, void *obj, int rc) {
+  cout << "[MQTT] on_mqtt_connect(): " << mosquitto_connack_string(rc) << endl;
+	if (rc == MOSQ_ERR_SUCCESS) {
+    mqtt_is_connected = true;
+    if (configuration.freshwater_enabled)  mosquitto_subscribe(mosq, NULL, configuration.freshwater_topic.c_str(), 1);
+    if (configuration.greywater_enabled)   mosquitto_subscribe(mosq, NULL, configuration.greywater_topic.c_str(), 1);
+    if (configuration.gas_bottle1_enabled) mosquitto_subscribe(mosq, NULL, configuration.gas_bottle1_topic.c_str(), 1);
+    if (configuration.gas_bottle2_enabled) mosquitto_subscribe(mosq, NULL, configuration.gas_bottle2_topic.c_str(), 1);
+    if (configuration.battery1_enabled)    mosquitto_subscribe(mosq, NULL, configuration.battery1_topic.c_str(), 1);
+    if (configuration.battery2_enabled)    mosquitto_subscribe(mosq, NULL, configuration.battery2_topic.c_str(), 1);
+  } else {
+    cerr << "[MQTT] Error, not going to subscribe topics!" << endl;
+  }
+}
+
+void on_mqtt_disconnect(struct mosquitto *mosq, void *obj, int rc) {
+  mqtt_is_connected = false;
+  show_warning("Warning: Not connected to the MQTT");
+
+  if (rc == MOSQ_ERR_SUCCESS) {
+    cout << "[MQTT] Successfully disconnected." << endl; 
+  } else {
+    cerr << "[MQTT] on_mqtt_disconnect(): errno " << rc << " (" << mosquitto_strerror(rc) << ")" << endl;
+  }
+}
+
+void on_mqtt_message(struct mosquitto *mosq, void *obj, const struct mosquitto_message *msg) {
+  cout << "[MQTT] on_mqtt_message(): received update to " << msg->topic << " value " << (char *)msg->payload << endl;
+  if (strcmp(msg->topic, configuration.freshwater_topic.c_str()) == 0) {
+    mqtt_data_cache.freshwater = atoi((char *)msg->payload);
+  } else if (strcmp(msg->topic, configuration.greywater_topic.c_str()) == 0) {
+    mqtt_data_cache.greywater = atoi((char *)msg->payload);
+  } else if (strcmp(msg->topic, configuration.gas_bottle1_topic.c_str()) == 0) {
+    mqtt_data_cache.gas_bottle1 = atoi((char *)msg->payload);
+  } else if (strcmp(msg->topic, configuration.gas_bottle2_topic.c_str()) == 0) {
+    mqtt_data_cache.gas_bottle2 = atoi((char *)msg->payload);
+  } else if (strcmp(msg->topic, configuration.battery1_topic.c_str()) == 0) {
+    mqtt_data_cache.battery1 = atoi((char *)msg->payload);
+  } else if (strcmp(msg->topic, configuration.battery2_topic.c_str()) == 0) {
+    mqtt_data_cache.battery2 = atoi((char *)msg->payload);
+  }
+  refresh_levels();
+}
+
+void mqtt_auto_connect(lv_timer_t *timer) {
+  (void)timer;
+
+  if (!mqtt_is_connected) {
+    mosquitto_disconnect(mosq);
+    mosquitto_loop_stop(mosq, true);
+
+    mosquitto_reinitialise(mosq, NULL, true, NULL);
+    mosquitto_connect_callback_set(mosq, on_mqtt_connect);
+    mosquitto_disconnect_callback_set(mosq, on_mqtt_disconnect);
+    mosquitto_message_callback_set(mosq, on_mqtt_message);
+
+    // ensure that the loop thread is running
+    int rc = mosquitto_loop_start(mosq);
+    if (rc) {
+      cerr << "[MQTT] loop_start failed: " << mosquitto_strerror(rc) << endl;
+    } else {
+      cout << "[MQTT] Trying to connecting to " << configuration.mqtt_hostname << ":" << configuration.mqtt_port << endl;
+      mosquitto_username_pw_set(mosq, configuration.mqtt_user.c_str(), configuration.mqtt_pass.c_str());
+      int rc = mosquitto_connect_async(mosq, configuration.mqtt_hostname.c_str(), stoi(configuration.mqtt_port), 5);
+      if (rc != MOSQ_ERR_SUCCESS) {
+        cerr << "[MQTT] connect_async failed: " << mosquitto_strerror(rc) << endl;
+      }
+    }
+  }
+}
+
 int main(int argc, char **argv) {
-  (void)argc; /* Unused */
-  (void)argv; /* Unused */
+  (void)argc; // Unused
+  (void)argv; // Unused
 
   // Load last known configuration
   load_configuration();
@@ -123,24 +199,26 @@ int main(int argc, char **argv) {
     bcm2835_gpio_write(configuration.relay_3_gpio, HIGH);
   }
 
-  // Allways allocate the memory on startup. We will never free it up again!
-  int bufsize = 2048;
-  mqtt_state.sendbuf = (uint8_t*)malloc(bufsize);
-  mqtt_state.sendbufsz = bufsize;
-  mqtt_state.recvbuf = (uint8_t*)malloc(bufsize);
-  mqtt_state.recvbufsz = bufsize;
-  cout << "[MQTT] Connecting to " << configuration.mqtt_hostname << ":" << configuration.mqtt_port << endl;
-  mqtt_init_reconnect(&mqtt, mqtt_reconnect_client, &mqtt_state, mqtt_publish_callback);
+  int rc;
+  mosquitto_lib_init();
+  mosq = mosquitto_new(NULL, true, NULL); // keep identical to mqtt_auto_connect!
+	if (mosq == NULL) {
+    cerr << "Error: Out of memory." << endl;
+    return EXIT_FAILURE; 
+  }
+  mqtt_auto_connect(NULL);  // directly try to connect to mqtt
 
   // Update the clock
-  timer_upd_clock = lv_timer_create(display_update_clock, 500, NULL);
-  timer_mqtt_sync = lv_timer_create(mqtt_sync_wrapper, 2500, &mqtt);
+  lv_timer_create(display_update_clock, 500, NULL);
+  lv_timer_create(mqtt_auto_connect, 30*1000, NULL);
 
   /*Handle LitlevGL tasks (tickless mode)*/
   while(1) {
     lv_tick_inc(5);
     lv_timer_handler();
     usleep(5000);
+
+    if (mqtt_is_connected) hide_warning();
 
     // Normal operation (no sleep) 
     if (lv_disp_get_inactive_time(NULL) < configuration.display_backlight_dim_timeout_sec*1000) {
@@ -152,6 +230,10 @@ int main(int argc, char **argv) {
     }
   }
 
+	mosquitto_disconnect(mosq);
+	mosquitto_loop_stop(mosq, false);
+	mosquitto_destroy(mosq);
+	mosquitto_lib_cleanup();
   return 0;
 }
 
@@ -309,44 +391,6 @@ void display_update_clock(lv_timer_t *timer) {
   lv_label_set_text_fmt(ui_DateIndicator, "%02d.%02d.%04d", tm.tm_mday, tm.tm_mon+1, tm.tm_year+1900);
 }
 
-/*********************
- *   MQTT related
- *********************/
-void mqtt_sync_wrapper(lv_timer_t * timer) {
-  mqtt_sync(static_cast<mqtt_client*>(timer->user_data));
-}
-
-void mqtt_force_reconnect() {
-  mqtt.error = MQTT_ERROR_CONNECTION_CLOSED;
-}
-
-void mqtt_reconnect_client(struct mqtt_client* client, void **reconnect_state_vptr) {
-  struct mqtt_buffer_t *reconnect_state = *((struct mqtt_buffer_t**) reconnect_state_vptr);
-
-  if (client->error != MQTT_ERROR_INITIAL_RECONNECT) {
-    close(client->socketfd);
-    printf("reconnect_client: called while client was in error state \"%s\"\n", mqtt_error_str(client->error));
-  }
-
-  int sockfd = open_nb_socket(configuration.mqtt_hostname.c_str(), configuration.mqtt_port.c_str());
-  if (sockfd == -1) return perror("Failed to open socket!");
-
-  // Reinitialize the client.
-  mqtt_reinit(client, sockfd,
-              reconnect_state->sendbuf, reconnect_state->sendbufsz,
-              reconnect_state->recvbuf, reconnect_state->recvbufsz
-  );
-  uint8_t connect_flags = MQTT_CONNECT_CLEAN_SESSION;
-  mqtt_connect(client, "mydisplay", NULL, NULL, 0, configuration.mqtt_user.c_str(), configuration.mqtt_pass.c_str(), connect_flags, 400);
-
-  if (configuration.freshwater_enabled) mqtt_subscribe(client, configuration.freshwater_topic.c_str(), 0);
-  if (configuration.greywater_enabled) mqtt_subscribe(client, configuration.greywater_topic.c_str(), 0);
-  if (configuration.gas_bottle1_enabled) mqtt_subscribe(client, configuration.gas_bottle1_topic.c_str(), 0);
-  if (configuration.gas_bottle2_enabled) mqtt_subscribe(client, configuration.gas_bottle2_topic.c_str(), 0);
-  if (configuration.battery1_enabled) mqtt_subscribe(client, configuration.battery1_topic.c_str(), 0);
-  if (configuration.battery2_enabled) mqtt_subscribe(client, configuration.battery2_topic.c_str(), 0);
-}
-
 void set_level(uint8_t num, int level) {
   if (num == 1) {
     lv_bar_set_value(ui_Level1, level, LV_ANIM_ON);
@@ -375,37 +419,6 @@ void refresh_levels() {
       printf("Unknown screen");
     break;
   }  
-}
-
-void mqtt_publish_callback(void** unused, struct mqtt_response_publish *published) {
-  /* note that published->topic_name is NOT null-terminated (here we'll change it to a c-string) */
-  char* topic_name = (char*) malloc(published->topic_name_size + 1);
-  memcpy(topic_name, published->topic_name, published->topic_name_size);
-  topic_name[published->topic_name_size] = '\0';
-
-  char* application_message = (char*) malloc(published->application_message_size + 1);
-  memcpy(application_message, published->application_message, published->application_message_size);
-  application_message[published->application_message_size] = '\0';
- 
-  // FIXME: get rid of c_str()
-  printf("Received publish('%s'): %s\n", topic_name, application_message);
-  if (strcmp(topic_name, configuration.freshwater_topic.c_str()) == 0) {
-    mqtt_data_cache.freshwater = atoi(application_message);
-  } else if (strcmp(topic_name, configuration.greywater_topic.c_str()) == 0) {
-    mqtt_data_cache.greywater = atoi(application_message);
-  } else if (strcmp(topic_name, configuration.gas_bottle1_topic.c_str()) == 0) {
-    mqtt_data_cache.gas_bottle1 = atoi(application_message);
-  } else if (strcmp(topic_name, configuration.gas_bottle2_topic.c_str()) == 0) {
-    mqtt_data_cache.gas_bottle2 = atoi(application_message);
-  } else if (strcmp(topic_name, configuration.battery1_topic.c_str()) == 0) {
-    mqtt_data_cache.battery1 = atoi(application_message);
-  } else if (strcmp(topic_name, configuration.battery2_topic.c_str()) == 0) {
-    mqtt_data_cache.battery2 = atoi(application_message);
-  }
-
-  refresh_levels();
-  free(topic_name);
-  free(application_message);
 }
 
 /*********************
@@ -580,7 +593,8 @@ void CLOSE_SETTINGS(lv_event_t * e) {
   configuration.relay_3_gpio = atoi(lv_textarea_get_text(ui_Relay3GPIO));
 
   save_configuration();
-  mqtt_force_reconnect();
+  mosquitto_disconnect(mosq);
+  mqtt_auto_connect(NULL);
   ONCLICK_NAV_2(e);
 }
 

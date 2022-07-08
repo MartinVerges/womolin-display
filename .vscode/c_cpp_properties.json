@@ -7,10 +7,9 @@
                 "/usr/include",
                 "${workspaceFolder}",
                 "${workspaceFolder}/libs/",
-                "${workspaceFolder}/libs/lv_drivers",
-                "${workspaceFolder}/libs/lvgl",
-                "${workspaceFolder}/libs/ArduinoJson",
-                "${workspaceFolder}/libs/mqtt-c/include"
+                "${workspaceFolder}/build/_deps/*",
+                "${workspaceFolder}/build/_deps/*/*",
+                "${workspaceFolder}/build/_deps/*/*/*"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

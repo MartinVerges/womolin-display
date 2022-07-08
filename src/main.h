@@ -1,5 +1,5 @@
 
-#include <mqtt.h>
+#include "mosquitto.h"
 #include <lvgl.h>
 #include <string>
 using namespace std;
@@ -45,13 +45,13 @@ void load_configuration();
 bool save_configuration();
 
 void display_update_clock(lv_timer_t *timer);
-void mqtt_sync_wrapper(lv_timer_t * timer);
 
 void hal_init_simulator(void);
 void hal_init_raspberry(void);
 
 void set_level(lv_obj_t * bar, lv_obj_t * label, int level);
 void refresh_levels();
+
 struct received_mqtt_data_t {
   uint8_t freshwater;
   uint8_t greywater;
@@ -62,17 +62,6 @@ struct received_mqtt_data_t {
   uint8_t battery1;
   uint8_t battery2;
 };
-
-struct mqtt_buffer_t {
-    uint8_t* sendbuf;
-    size_t sendbufsz;
-    uint8_t* recvbuf;
-    size_t recvbufsz;
-};
-void mqtt_force_reconnect();
-void mqtt_prepare(struct mqtt_client* client, config_t &config);
-void mqtt_reconnect_client(struct mqtt_client* client, void **reconnect_state_vptr);
-void mqtt_publish_callback(void** unused, struct mqtt_response_publish *published);
 
 #define Relay_Ch1 26
 #define Relay_Ch2 20

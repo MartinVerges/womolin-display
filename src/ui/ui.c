@@ -76,88 +76,60 @@ lv_obj_t * ui_Relay2;
 lv_obj_t * ui_Relay2Label;
 lv_obj_t * ui_Relay3;
 lv_obj_t * ui_Relay3Label;
-
 lv_obj_t * ui_RelaysSettings;
 lv_obj_t * ui_RelaysLabel;
 lv_obj_t * ui_Relay1GPIO;
 lv_obj_t * ui_Relay2GPIO;
 lv_obj_t * ui_Relay3GPIO;
+lv_obj_t * ui_WarnMessage;
 
 ///////////////////// FUNCTIONS ////////////////////
 static void ui_event_MainScreen(lv_event_t * e) {
-    lv_event_code_t event = lv_event_get_code(e);
-    if(event == LV_EVENT_SCREEN_LOADED) {
-        LOADSCREEN(e);
-    }
+    if(lv_event_get_code(e) == LV_EVENT_SCREEN_LOADED) LOADSCREEN(e);
 }
 static void ui_event_ButtonSettingsOpen(lv_event_t * e) {
-    lv_event_code_t event = lv_event_get_code(e);
-    if(event == LV_EVENT_CLICKED) {
+    if(lv_event_get_code(e) == LV_EVENT_CLICKED) {
         _ui_screen_change(ui_Settings, LV_SCR_LOAD_ANIM_FADE_ON, 0, 0);
     }
 }
 static void ui_event_NavButton1(lv_event_t * e) {
-    lv_event_code_t event = lv_event_get_code(e);
-    if(event == LV_EVENT_CLICKED) {
-        ONCLICK_NAV_1(e);
-    }
+    if(lv_event_get_code(e) == LV_EVENT_CLICKED) ONCLICK_NAV_1(e);
 }
 static void ui_event_NavButton2(lv_event_t * e) {
-    lv_event_code_t event = lv_event_get_code(e);
-    if(event == LV_EVENT_CLICKED) {
-        ONCLICK_NAV_2(e);
-    }
+    if(lv_event_get_code(e) == LV_EVENT_CLICKED) ONCLICK_NAV_2(e);
 }
 static void ui_event_NavButton3(lv_event_t * e) {
-    lv_event_code_t event = lv_event_get_code(e);
-    if(event == LV_EVENT_CLICKED) {
-        ONCLICK_NAV_3(e);
-    }
+    if(lv_event_get_code(e) == LV_EVENT_CLICKED) ONCLICK_NAV_3(e);
 }
 static void ui_event_NavButton4(lv_event_t * e) {
-    lv_event_code_t event = lv_event_get_code(e);
-    if(event == LV_EVENT_CLICKED) {
-        ONCLICK_NAV_4(e);
-    }
+    if(lv_event_get_code(e) == LV_EVENT_CLICKED) ONCLICK_NAV_4(e);
 }
 static void ui_event_NavButton5(lv_event_t * e) {
-    lv_event_code_t event = lv_event_get_code(e);
-    if(event == LV_EVENT_CLICKED) {
-        ONCLICK_NAV_5(e);
-    }
+    if(lv_event_get_code(e) == LV_EVENT_CLICKED) ONCLICK_NAV_5(e);
 }
 static void ui_event_Settings(lv_event_t * e) {
-    lv_event_code_t event = lv_event_get_code(e);
-    if(event == LV_EVENT_SCREEN_LOAD_START) {
-        PREFILL_SETTINGS(e);
-    }
+    if(lv_event_get_code(e) == LV_EVENT_SCREEN_LOAD_START) PREFILL_SETTINGS(e);
 }
 static void ui_event_ButtonSettingsClose(lv_event_t * e) {
-    lv_event_code_t event = lv_event_get_code(e);
-    if(event == LV_EVENT_CLICKED) {
+    if(lv_event_get_code(e) == LV_EVENT_CLICKED) {
         _ui_screen_change(ui_MainScreen, LV_SCR_LOAD_ANIM_FADE_ON, 0, 0);
         CLOSE_SETTINGS(e);
     }
 }
 static void ui_event_relay_1(lv_event_t * e) {
-    lv_event_code_t event = lv_event_get_code(e);
-    if(event == LV_EVENT_VALUE_CHANGED) {
-        RELAY_1(e);
-    }
+    if(lv_event_get_code(e) == LV_EVENT_VALUE_CHANGED) RELAY_1(e);
 }
 static void ui_event_relay_2(lv_event_t * e) {
-    lv_event_code_t event = lv_event_get_code(e);
-    if(event == LV_EVENT_VALUE_CHANGED) {
-        RELAY_2(e);
-    }
+    if(lv_event_get_code(e) == LV_EVENT_VALUE_CHANGED) RELAY_2(e);
 }
 static void ui_event_relay_3(lv_event_t * e) {
-    lv_event_code_t event = lv_event_get_code(e);
-    if(event == LV_EVENT_VALUE_CHANGED) {
-        RELAY_3(e);
+    if(lv_event_get_code(e) == LV_EVENT_VALUE_CHANGED) RELAY_3(e);
+}
+static void ui_onclick_hide_element(lv_event_t * e) {
+    if(lv_event_get_code(e) == LV_EVENT_CLICKED) {
+        _ui_flag_modify(e->target, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
     }
 }
-
 void switch_state(lv_obj_t * obj, bool state) {
   if (state) {
       lv_obj_add_state(obj, LV_STATE_CHECKED);
@@ -165,13 +137,9 @@ void switch_state(lv_obj_t * obj, bool state) {
       lv_obj_clear_state(obj, LV_STATE_CHECKED);
   }
 }
-
-static void ui_event_activateKeyboard(lv_event_t * e)
-{
-    lv_event_code_t event = lv_event_get_code(e);
-    lv_obj_t * ta = lv_event_get_target(e);
-    if(event == LV_EVENT_FOCUSED) {
-        lv_keyboard_set_textarea(ui_Keyboard, ta);
+static void ui_event_activateKeyboard(lv_event_t * e) {
+    if (lv_event_get_code(e) == LV_EVENT_FOCUSED) {
+        lv_keyboard_set_textarea(ui_Keyboard, lv_event_get_target(e));
     }
 }
 
@@ -717,7 +685,36 @@ void ui_MainScreen_screen_init(void) {
 
     ui_NavButton5 = lv_btn_create(ui_Navigation);
     ui_NavIcon5 = lv_img_create(ui_NavButton5);
-    ui_style_navbutton(ui_NavButton5, lv_pct(80), ui_event_NavButton5, ui_NavIcon5, &ui_img_icon_temperature_png); 
+    ui_style_navbutton(ui_NavButton5, lv_pct(80), ui_event_NavButton5, ui_NavIcon5, &ui_img_icon_temperature_png);
+
+    // ui_WarnMessage
+    ui_WarnMessage = lv_label_create(ui_MainScreen);
+    lv_obj_set_width(ui_WarnMessage, LV_SIZE_CONTENT);
+    lv_obj_set_height(ui_WarnMessage, LV_SIZE_CONTENT);
+    lv_obj_set_x(ui_WarnMessage, 0);
+    lv_obj_set_y(ui_WarnMessage, 75);
+    lv_label_set_text(ui_WarnMessage, "An unknown error occurred");
+
+    lv_obj_set_align(ui_WarnMessage, LV_ALIGN_TOP_MID);
+    lv_obj_add_flag(ui_WarnMessage, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_HIDDEN);
+    lv_obj_clear_flag(ui_WarnMessage, LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE | LV_OBJ_FLAG_GESTURE_BUBBLE |
+                      LV_OBJ_FLAG_SNAPPABLE | LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM |
+                      LV_OBJ_FLAG_SCROLL_CHAIN);
+    lv_obj_add_event_cb(ui_WarnMessage, ui_onclick_hide_element, LV_EVENT_ALL, NULL);
+
+    // Style a danger Warning
+    lv_obj_set_style_text_color(ui_WarnMessage, lv_color_hex(0x842029), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_WarnMessage, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_WarnMessage, &ui_font_rubik_SemiBold_22, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_radius(ui_WarnMessage, 4, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(ui_WarnMessage, lv_color_hex(0xF8D7DA), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_WarnMessage, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_color(ui_WarnMessage, lv_color_hex(0xF5C2C7), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_opa(ui_WarnMessage, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_left(ui_WarnMessage, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_right(ui_WarnMessage, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_top(ui_WarnMessage, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_bottom(ui_WarnMessage, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
 }
 
 void ui_Settings_screen_init(void) {

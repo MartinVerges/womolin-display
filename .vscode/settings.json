@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "*.simulator": "c",
-        "*.raspberry": "cpp"
+        "*.raspberry": "cpp",
+        "iostream": "cpp",
+        "numbers": "cpp",
+        "ui_helpers.h": "c",
+        "ostream": "cpp"
     }
 }

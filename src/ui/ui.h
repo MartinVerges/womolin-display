@@ -10,6 +10,7 @@ extern "C" {
 #else
 #include "lvgl/lvgl.h"
 #endif
+#include "ui_helpers.h"
 
 extern lv_obj_t * ui_MainScreen;
 extern lv_obj_t * ui_Content;
@@ -91,6 +92,7 @@ extern lv_obj_t * ui_RelaysLabel;
 extern lv_obj_t * ui_Relay1GPIO;
 extern lv_obj_t * ui_Relay2GPIO;
 extern lv_obj_t * ui_Relay3GPIO;
+extern lv_obj_t * ui_WarnMessage;
 
 
 

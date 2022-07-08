@@ -24,6 +24,13 @@ Please note: at the current state, this Project only works on 1024x600 pixel and
 
 ## Installation
 
+Before you can use the software, make sure to have the required system dependencies installed.
+On Debian or Ubuntu Systems it should be something like:
+
+```
+apt -y install libmosquitto-dev libsdl2-dev
+```
+
 If you want to give it a try, take a look at the [INSTALL.md](https://github.com/MartinVerges/womolin-display/blob/main/INSTALL.md) documentation.
 
 ## Screenshots
@@ -32,24 +39,29 @@ If you want to give it a try, take a look at the [INSTALL.md](https://github.com
 <img src="screenshots/settings.png?raw=true" alt="Settings" width="50%">
 <img src="screenshots/batteries.png?raw=true" alt="Battery state" width="50%">
 <img src="screenshots/gas_level.png?raw=true" alt="Gas level" width="50%">
+<img src="screenshots/warnings.png?raw=true" alt="On screen error reporting" width="50%">
 
 ## Prepare simulator
 
 In order to run it on a simulator, you have to change the Symlink of `lv_conf.h`, `lv_drv_conf.h`, and `Makefile` to simulator.
 
 ```
+cd src
 git update-index --skip-worktree lv_conf.h lv_drv_conf.h
 ln -sf lv_conf.h.simulator lv_conf.h
 ln -sf lv_drv_conf.h.simulator lv_drv_conf.h
+cd ..
 mkdir -p build && cd build
 cmake -DCMAKE_BUILD_TYPE=Debug .. && cmake --build .
 ```
 
 To run it on the Raspberry PI, please use:
 ```
+cd src
 git update-index --skip-worktree lv_conf.h lv_drv_conf.h
 ln -sf lv_conf.h.raspberry lv_conf.h
 ln -sf lv_drv_conf.h.raspberry lv_drv_conf.h
+cd ..
 mkdir -p build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build .
 ```
