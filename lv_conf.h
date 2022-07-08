@@ -1,1 +1,0 @@
-src/lv_conf.h.raspberry

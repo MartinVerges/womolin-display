@@ -56,8 +56,8 @@ Therefore we make sure it will work always.
 
 When you found the correct one, create a symlink like this:
 ```
-mkdir -p /usr/lib/rv-hud/bin/
-ln -s /dev/input/by-path/platform-*.i2c-event /usr/lib/rv-hud/bin/touchscreen
+mkdir -p /usr/lib/womolin-display/bin/
+ln -s /dev/input/by-path/platform-*.i2c-event /usr/lib/womolin-display/bin/touchscreen
 ```
 
 Now that the touchscreen is ready, we can install the GUI.
@@ -84,7 +84,7 @@ If you have none available, installing it on the Raspberry PI could be a good ch
 ```
 apt -y install mosquitto mosquitto-clients
 mosquitto_passwd -c -b /etc/mosquitto/passwd gui abcd1234
-cat > /etc/mosquitto/conf.d/rv-hud.conf << EOL
+cat > /etc/mosquitto/conf.d/womolin-display.conf << EOL
 listener 1883 0.0.0.0
 allow_anonymous false
 password_file /etc/mosquitto/passwd

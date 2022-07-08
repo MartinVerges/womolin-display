@@ -1,15 +1,15 @@
 
 [Unit]
-Description=RV-HUD display service
+Description=WomoLIN display service
 StartLimitIntervalSec=0
 
 [Service]
 Type=simple
 Restart=always
-RestartSec=1
+RestartSec=15
 User=root
 ExecStartPre=/bin/sh -c '/usr/bin/chvt 7 && echo 0 > /sys/class/graphics/fbcon/cursor_blink'
-ExecStart=/usr/lib/rv-hud/bin/rv-gui
+ExecStart=/usr/lib/womolin-display/bin/display
 
 [Install]
 WantedBy=multi-user.target

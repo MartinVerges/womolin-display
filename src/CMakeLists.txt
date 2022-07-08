@@ -30,9 +30,9 @@ find_package(SDL2 REQUIRED)
 add_compile_options(-Wall -Wextra -pedantic -Werror)
 target_link_libraries(display PRIVATE Ui lvgl lv_drivers mosquitto ArduinoJson bcm2835)
 
-install(FILES ${CMAKE_BINARY_DIR}/src/display PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ DESTINATION /usr/lib/rv-hud/bin/)
-install(FILES ${CMAKE_SOURCE_DIR}/systemd/rv-hud.service DESTINATION /etc/systemd/system/)
+install(FILES ${CMAKE_BINARY_DIR}/src/display PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ DESTINATION /usr/lib/womolin-display/bin/)
+install(FILES ${CMAKE_SOURCE_DIR}/systemd/womolin-display.service DESTINATION /etc/systemd/system/)
 install(CODE "EXECUTE_PROCESS(COMMAND systemctl daemon-reload)")
-install(CODE "EXECUTE_PROCESS(COMMAND systemctl stop rv-hud.service)")
-install(CODE "EXECUTE_PROCESS(COMMAND systemctl enable --now rv-hud.service)")
+install(CODE "EXECUTE_PROCESS(COMMAND systemctl stop womolin-display.service)")
+install(CODE "EXECUTE_PROCESS(COMMAND systemctl enable --now womolin-display.service)")
 
