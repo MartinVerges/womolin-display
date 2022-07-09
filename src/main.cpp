@@ -35,17 +35,6 @@ bool mqtt_is_connected = false;
 #include <ArduinoJson.h>
 
 /*********************
- *   BCM2835
- *********************/
-#include "bcm2835.h"
-#if USE_SDL
-  // can't simulate that on my desk
-  bool use_bcm2835 = false;
-#else
-  // enable with the RPI
-  bool use_bcm2835 = true;
-#endif
-/*********************
  *   INCLUDES
  *********************/
 #include <linux/input.h>
@@ -89,7 +78,7 @@ void hide_warning() {
 
 void change_display_brightness(uint8_t val) {
   if (display_brightness != val) {
-    char charValue[3];
+    char charValue[4];
     sprintf(charValue, "%d", val);
 
     //1 = 100%  255 = 0% brightness in /sys/waveshare/rpi_backlight/brightness
@@ -188,16 +177,15 @@ int main(int argc, char **argv) {
 
   ui_init();
 
-  if (use_bcm2835 && bcm2835_init() ) {
-    printf("[BCM2835] Init success");
-    bcm2835_gpio_fsel(configuration.relay_1_gpio, BCM2835_GPIO_FSEL_OUTP);
-    bcm2835_gpio_fsel(configuration.relay_2_gpio, BCM2835_GPIO_FSEL_OUTP);
-    bcm2835_gpio_fsel(configuration.relay_3_gpio, BCM2835_GPIO_FSEL_OUTP);
-    bcm2835_delay(100); // on boot, release all relais
-    bcm2835_gpio_write(configuration.relay_1_gpio, HIGH);
-    bcm2835_gpio_write(configuration.relay_2_gpio, HIGH);
-    bcm2835_gpio_write(configuration.relay_3_gpio, HIGH);
-  }
+#ifndef USE_SDL
+  cout << "[GPIO] Using Raspberry PI GPIOs to control relais" << endl;
+  gpio.set_level(configuration.relay_1_gpio, GPIO_HIGH);
+  gpio.set_level(configuration.relay_2_gpio, GPIO_HIGH);
+  gpio.set_level(configuration.relay_3_gpio, GPIO_HIGH);
+  gpio.set_direction_out(configuration.relay_1_gpio);
+  gpio.set_direction_out(configuration.relay_2_gpio);
+  gpio.set_direction_out(configuration.relay_3_gpio);
+#endif
 
   int rc;
   mosquitto_lib_init();
@@ -603,45 +591,29 @@ void LOADSCREEN(lv_event_t * e) {
 }
 
 void RELAY_1(lv_event_t * e) {
-  if (!use_bcm2835) return;  
+#ifndef USE_SDL
   if (lv_obj_has_state(ui_Relay1, LV_STATE_CHECKED)) {
-    bcm2835_gpio_write(configuration.relay_1_gpio, LOW);
+    gpio.set_level(configuration.relay_1_gpio, GPIO_LOW);
   } else {
-    bcm2835_gpio_write(configuration.relay_1_gpio, HIGH);
+    gpio.set_level(configuration.relay_1_gpio, GPIO_HIGH);
   }
+#endif
 }
 void RELAY_2(lv_event_t * e) {
-  if (!use_bcm2835) return;
+#ifndef USE_SDL
   if (lv_obj_has_state(ui_Relay2, LV_STATE_CHECKED)) {
-    bcm2835_gpio_write(configuration.relay_2_gpio, LOW);
+    gpio.set_level(configuration.relay_2_gpio, GPIO_LOW);
   } else {
-    bcm2835_gpio_write(configuration.relay_2_gpio, HIGH);
+    gpio.set_level(configuration.relay_2_gpio, GPIO_HIGH);
   }
+#endif
 }
 void RELAY_3(lv_event_t * e) {
-  if (!use_bcm2835) return;
+#ifndef USE_SDL
   if (lv_obj_has_state(ui_Relay3, LV_STATE_CHECKED)) {
-    bcm2835_gpio_write(configuration.relay_3_gpio, LOW);
+    gpio.set_level(configuration.relay_3_gpio, GPIO_LOW);
   } else {
-    bcm2835_gpio_write(configuration.relay_3_gpio, HIGH);
+    gpio.set_level(configuration.relay_3_gpio, GPIO_HIGH);
   }
+#endif
 }
-
-/*void NAV_BTTN_ACTIVE() {
-  lv_obj_t * parent;
-  lv_obj_t * child;
-  for(int i1 = 0; i1 < lv_obj_get_child_cnt(ui_Settings); i1++) {
-    parent  = lv_obj_get_child(ui_Settings, i1);
-    if (lv_obj_check_type(parent, &lv_obj_class)) {
-      for(int i2 = 0; i2 < lv_obj_get_child_cnt(parent); i2++) {
-        child = lv_obj_get_child(parent, i2);
-        if (lv_obj_check_type(child, &lv_switch_class)) {
-          LV_LOG_INFO("Activating Switch");
-          lv_obj_add_state(child, LV_STATE_CHECKED);
-        } else if (lv_obj_check_type(child, &lv_textarea_class)) {
-        }
-        
-      }
-    }
-  }
-}*/

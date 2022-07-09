@@ -28,7 +28,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ui)
 find_package(SDL2 REQUIRED)
 
 add_compile_options(-Wall -Wextra -pedantic -Werror)
-target_link_libraries(display PRIVATE Ui lvgl lv_drivers mosquitto ArduinoJson bcm2835)
+target_link_libraries(display PRIVATE Ui lvgl lv_drivers mosquitto ArduinoJson sysfs_gpio)
 
 install(FILES ${CMAKE_BINARY_DIR}/src/display PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ DESTINATION /usr/lib/womolin-display/bin/)
 install(FILES ${CMAKE_SOURCE_DIR}/systemd/womolin-display.service DESTINATION /etc/systemd/system/)

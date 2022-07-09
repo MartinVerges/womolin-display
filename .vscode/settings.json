@@ -5,6 +5,11 @@
         "iostream": "cpp",
         "numbers": "cpp",
         "ui_helpers.h": "c",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "strstream": "cpp",
+        "string": "cpp",
+        "*.tcc": "cpp",
+        "iosfwd": "cpp",
+        "fstream": "cpp"
     }
 }

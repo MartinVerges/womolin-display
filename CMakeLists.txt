@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED true) 
 set(CMAKE_CXX_CPPLINT true)
 
-include_directories(${CMAKE_SOURCE_DIR}/libs/bcm2835/)
+include_directories(${CMAKE_SOURCE_DIR}/libs/sysfs_gpio/)
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/libs/bcm2835/)
+add_subdirectory(${CMAKE_SOURCE_DIR}/libs/sysfs_gpio/)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/)

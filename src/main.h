@@ -1,8 +1,13 @@
 
+
 #include "mosquitto.h"
 #include <lvgl.h>
 #include <string>
+#include <sysfs_gpio.h>
+
 using namespace std;
+
+SysFS_GPIO gpio;
 
 int nav_screen = 1;
 

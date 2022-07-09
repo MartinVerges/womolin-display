@@ -6,7 +6,9 @@
                 "${default}",
                 "/usr/include",
                 "${workspaceFolder}",
-                "${workspaceFolder}/libs/",
+                "${workspaceFolder}/libs",
+                "${workspaceFolder}/libs/*",
+                "${workspaceFolder}/libs/*/*",
                 "${workspaceFolder}/build/_deps/*",
                 "${workspaceFolder}/build/_deps/*/*",
                 "${workspaceFolder}/build/_deps/*/*/*"
