@@ -32,6 +32,8 @@ class SysFS_GPIO {
     bool do_unexport(uint8_t gpio);
 
   private:
+    // we want to get a new instance of string() on each request
+    inline string _base_path() { return string("/sys/class/gpio"); };
     string _path(uint8_t gpio);
     bool set_direction_raw(uint8_t gpio, string raw);
 };

@@ -96,11 +96,12 @@ bool SysFS_GPIO::is_exposed(uint8_t gpio) {
 bool SysFS_GPIO::do_export(uint8_t gpio) {
   if (is_exposed(gpio)) return true;
 
-  ofstream out(_path(NULL).append("/export"));
+  ofstream out(_base_path().append("/export"));
   out << to_string(gpio) << endl;
   out.close();
 
   if (is_exposed(gpio)) return true;
+  return false;
 }
 
 /**
@@ -113,20 +114,19 @@ bool SysFS_GPIO::do_export(uint8_t gpio) {
 bool SysFS_GPIO::do_unexport(uint8_t gpio) {
   if (!is_exposed(gpio)) return true;
 
-  ofstream out(_path(NULL).append("/unexport"));
+  ofstream out(_base_path().append("/unexport"));
   out << to_string(gpio) << endl;
   out.close();
 
   if (!is_exposed(gpio)) return true;
+  return false;
 }
 
 /**
  * @brief Returns the base sysfs path to the GPIO
- * @param gpio the GPIO to return the path to,
- *        NULL to return the base path
+ * @param gpio the GPIO to return the path to
  */
 string SysFS_GPIO::_path(uint8_t gpio) {
-  if (gpio == NULL) return string("/sys/class/gpio");
-  return string("/sys/class/gpio/gpio").append(to_string(gpio));
+  return _base_path().append("/gpio").append(to_string(gpio));
 }
 
