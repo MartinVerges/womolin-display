@@ -92,7 +92,7 @@ void change_display_brightness(uint8_t val) {
 
 void on_mqtt_connect(struct mosquitto *mosq, void *obj, int rc) {
   cout << "[MQTT] on_mqtt_connect(): " << mosquitto_connack_string(rc) << endl;
-	if (rc == MOSQ_ERR_SUCCESS) {
+  if (rc == MOSQ_ERR_SUCCESS) {
     mqtt_is_connected = true;
     if (configuration.freshwater_enabled)  mosquitto_subscribe(mosq, NULL, configuration.freshwater_topic.c_str(), 1);
     if (configuration.greywater_enabled)   mosquitto_subscribe(mosq, NULL, configuration.greywater_topic.c_str(), 1);
@@ -190,7 +190,7 @@ int main(int argc, char **argv) {
   int rc;
   mosquitto_lib_init();
   mosq = mosquitto_new(NULL, true, NULL); // keep identical to mqtt_auto_connect!
-	if (mosq == NULL) {
+  if (mosq == NULL) {
     cerr << "Error: Out of memory." << endl;
     return EXIT_FAILURE; 
   }
@@ -218,10 +218,10 @@ int main(int argc, char **argv) {
     }
   }
 
-	mosquitto_disconnect(mosq);
-	mosquitto_loop_stop(mosq, false);
-	mosquitto_destroy(mosq);
-	mosquitto_lib_cleanup();
+  mosquitto_disconnect(mosq);
+  mosquitto_loop_stop(mosq, false);
+  mosquitto_destroy(mosq);
+  mosquitto_lib_cleanup();
   return 0;
 }
 
@@ -295,14 +295,14 @@ void load_configuration() {
   configuration.mqtt_pass = doc["mqtt_pass"] | "";
 
   configuration.freshwater_enabled = doc["freshwater_enabled"] | false;
-  configuration.freshwater_topic = doc["freshwater_topic"] | "freshwater/tanklevel";
+  configuration.freshwater_topic = doc["freshwater_topic"] | "waterlevel/level1";
   configuration.greywater_enabled = doc["greywater_enabled"] | false;
-  configuration.greywater_topic = doc["greywater_topic"] | "greywater/tanklevel";
+  configuration.greywater_topic = doc["greywater_topic"] | "waterlevel/level2";
 
   configuration.gas_bottle1_enabled = doc["gas_bottle1_enabled"] | false;
-  configuration.gas_bottle1_topic = doc["gas_bottle1_topic"] | "gas/bottle1";
+  configuration.gas_bottle1_topic = doc["gas_bottle1_topic"] | "gaslevel/level1";
   configuration.gas_bottle2_enabled = doc["gas_bottle2_enabled"] | false;
-  configuration.gas_bottle2_topic = doc["gas_bottle2_topic"] | "gas/bottle2";
+  configuration.gas_bottle2_topic = doc["gas_bottle2_topic"] | "gaslevel/level2";
 
   configuration.battery1_enabled = doc["battery1_enabled"] | false;
   configuration.battery1_topic = doc["battery1_topic"] | "battery1/soc";
