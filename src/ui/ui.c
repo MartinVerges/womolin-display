@@ -24,16 +24,16 @@ lv_obj_t * ui_DateIndicator;
 lv_obj_t * ui_TimeIndicator;
 lv_obj_t * ui_ButtonSettingsOpen;
 lv_obj_t * ui_Navigation;
-lv_obj_t * ui_NavButton1;
-lv_obj_t * ui_NavIcon1;
+//lv_obj_t * ui_NavButton1;
+//lv_obj_t * ui_NavIcon1;
 lv_obj_t * ui_NavButton2;
 lv_obj_t * ui_NavIcon2;
 lv_obj_t * ui_NavButton3;
 lv_obj_t * ui_NavIcon3;
 lv_obj_t * ui_NavButton4;
 lv_obj_t * ui_NavIcon4;
-lv_obj_t * ui_NavButton5;
-lv_obj_t * ui_NavIcon5;
+//lv_obj_t * ui_NavButton5;
+//lv_obj_t * ui_NavIcon5;
 lv_obj_t * ui_Settings;
 lv_obj_t * ui_ButtonSettingsClose;
 lv_obj_t * ui_Keyboard;
@@ -666,11 +666,11 @@ void ui_MainScreen_screen_init(void) {
     lv_obj_set_style_pad_top(ui_Navigation, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_pad_bottom(ui_Navigation, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-
+/*
     ui_NavButton1 = lv_btn_create(ui_Navigation);
     ui_NavIcon1 = lv_img_create(ui_NavButton1);
     ui_style_navbutton(ui_NavButton1, 0, ui_event_NavButton1, ui_NavIcon1, &ui_img_icon_weather_png);
-
+*/
     ui_NavButton2 = lv_btn_create(ui_Navigation);
     ui_NavIcon2 = lv_img_create(ui_NavButton2);
     ui_style_navbutton(ui_NavButton2, lv_pct(20), ui_event_NavButton2, ui_NavIcon2, &ui_img_icon_water_png);
@@ -683,10 +683,11 @@ void ui_MainScreen_screen_init(void) {
     ui_NavIcon4 = lv_img_create(ui_NavButton4);
     ui_style_navbutton(ui_NavButton4, lv_pct(60), ui_event_NavButton4, ui_NavIcon4, &ui_img_icon_gas_png);
 
+/*
     ui_NavButton5 = lv_btn_create(ui_Navigation);
     ui_NavIcon5 = lv_img_create(ui_NavButton5);
     ui_style_navbutton(ui_NavButton5, lv_pct(80), ui_event_NavButton5, ui_NavIcon5, &ui_img_icon_temperature_png);
-
+*/
     // ui_WarnMessage
     ui_WarnMessage = lv_label_create(ui_MainScreen);
     lv_obj_set_width(ui_WarnMessage, LV_SIZE_CONTENT);

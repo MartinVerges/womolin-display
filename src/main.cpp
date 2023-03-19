@@ -428,22 +428,22 @@ void NAV_BTTN_DISABLE(lv_obj_t * bttn, lv_obj_t * icon) {
 void ONCLICK_NAV_1(lv_event_t * e) {
   (void)e;
   nav_screen = 1;
-  NAV_BTTN_ENABLE(ui_NavButton1, ui_NavIcon1);
+  //NAV_BTTN_ENABLE(ui_NavButton1, ui_NavIcon1);
   NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
   NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
   NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
-  NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
+  //NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
   refresh_levels();
 }
 
 void ONCLICK_NAV_2(lv_event_t * e) {  // Tanklevel
   (void)e;
   nav_screen = 2;
-  NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
+  //NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
   NAV_BTTN_ENABLE(ui_NavButton2, ui_NavIcon2);
   NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
   NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
-  NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
+  //NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
 
   lv_label_set_text(ui_Level1Label, "FRESH WATER");
   lv_label_set_text(ui_Level2Label, "GREY WATER");
@@ -460,11 +460,11 @@ void ONCLICK_NAV_2(lv_event_t * e) {  // Tanklevel
 void ONCLICK_NAV_3(lv_event_t * e) {  // Battery
   (void)e;
   nav_screen = 3;
-  NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
+  //NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
   NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
   NAV_BTTN_ENABLE(ui_NavButton3, ui_NavIcon3);
   NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
-  NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
+  //NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
 
   lv_label_set_text(ui_Level1Label, "BATTERY 1");
   lv_label_set_text(ui_Level2Label, "BATTERY 2");
@@ -481,11 +481,11 @@ void ONCLICK_NAV_3(lv_event_t * e) {  // Battery
 void ONCLICK_NAV_4(lv_event_t * e) {  // Gas
   (void)e;
   nav_screen = 4;
-  NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
+  //NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
   NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
   NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
   NAV_BTTN_ENABLE(ui_NavButton4, ui_NavIcon4);
-  NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
+  //NAV_BTTN_DISABLE(ui_NavButton5, ui_NavIcon5);
 
   lv_label_set_text(ui_Level1Label, "BOTTLE 1");
   lv_label_set_text(ui_Level2Label, "BOTTLE 2");
@@ -502,11 +502,11 @@ void ONCLICK_NAV_4(lv_event_t * e) {  // Gas
 void ONCLICK_NAV_5(lv_event_t * e) {
   (void)e;
   nav_screen = 5;
-  NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
+  //NAV_BTTN_DISABLE(ui_NavButton1, ui_NavIcon1);
   NAV_BTTN_DISABLE(ui_NavButton2, ui_NavIcon2);
   NAV_BTTN_DISABLE(ui_NavButton3, ui_NavIcon3);
   NAV_BTTN_DISABLE(ui_NavButton4, ui_NavIcon4);
-  NAV_BTTN_ENABLE(ui_NavButton5, ui_NavIcon5);
+  //NAV_BTTN_ENABLE(ui_NavButton5, ui_NavIcon5);
   refresh_levels();
 }
  

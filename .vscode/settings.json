@@ -11,5 +11,6 @@
         "*.tcc": "cpp",
         "iosfwd": "cpp",
         "fstream": "cpp"
-    }
+    },
+    "cmake.configureOnOpen": true
 }
