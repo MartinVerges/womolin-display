@@ -109,8 +109,8 @@ void PREFILL_SETTINGS(lv_event_t * e);
 void CLOSE_SETTINGS(lv_event_t * e);
 void LOADSCREEN(lv_event_t * e);
 void RELAY_1(lv_event_t * e);
-void RELAY_2(lv_event_t * e);
-void RELAY_3(lv_event_t * e);
+//void RELAY_2(lv_event_t * e);
+//void RELAY_3(lv_event_t * e);
 
 void switch_state(lv_obj_t * obj, bool state);
 

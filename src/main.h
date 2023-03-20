@@ -43,8 +43,8 @@ struct config_t {
   uint8_t display_backlight_min;
 
   uint8_t relay_1_gpio;
-  uint8_t relay_2_gpio;
-  uint8_t relay_3_gpio;
+  //uint8_t relay_2_gpio;
+  //uint8_t relay_3_gpio;
 };
 void load_configuration();
 bool save_configuration();

@@ -180,11 +180,11 @@ int main(int argc, char **argv) {
 #ifndef USE_SDL
   cout << "[GPIO] Using Raspberry PI GPIOs to control relais" << endl;
   gpio.set_level(configuration.relay_1_gpio, GPIO_HIGH);
-  gpio.set_level(configuration.relay_2_gpio, GPIO_HIGH);
-  gpio.set_level(configuration.relay_3_gpio, GPIO_HIGH);
+//  gpio.set_level(configuration.relay_2_gpio, GPIO_HIGH);
+//  gpio.set_level(configuration.relay_3_gpio, GPIO_HIGH);
   gpio.set_direction_out(configuration.relay_1_gpio);
-  gpio.set_direction_out(configuration.relay_2_gpio);
-  gpio.set_direction_out(configuration.relay_3_gpio);
+//  gpio.set_direction_out(configuration.relay_2_gpio);
+//  gpio.set_direction_out(configuration.relay_3_gpio);
 #endif
 
   int rc;
@@ -267,8 +267,8 @@ bool save_configuration() {
   doc["display_backlight_min"] = configuration.display_backlight_min;
 
   doc["relay_1_gpio"] = configuration.relay_1_gpio;
-  doc["relay_2_gpio"] = configuration.relay_2_gpio;
-  doc["relay_3_gpio"] = configuration.relay_3_gpio;
+  //doc["relay_2_gpio"] = configuration.relay_2_gpio;
+  //doc["relay_3_gpio"] = configuration.relay_3_gpio;
 
   if (serializeJsonPretty(doc, fs) == 0) {
     perror("Failed to write to file!");
@@ -315,8 +315,8 @@ void load_configuration() {
   configuration.display_backlight_min = doc["display_backlight_min"] | 255;
 
   configuration.relay_1_gpio = doc["relay_1_gpio"] | 26;
-  configuration.relay_2_gpio = doc["relay_2_gpio"] | 20;
-  configuration.relay_3_gpio = doc["relay_3_gpio"] | 21;
+//  configuration.relay_2_gpio = doc["relay_2_gpio"] | 20;
+//  configuration.relay_3_gpio = doc["relay_3_gpio"] | 21;
 
   fs.close();
 }
