@@ -177,7 +177,7 @@ int main(int argc, char **argv) {
 
   ui_init();
 
-#ifndef USE_SDL
+//#ifndef USE_SDL
   cout << "[GPIO] Using Raspberry PI GPIOs to control relais" << endl;
   gpio.set_level(configuration.relay_1_gpio, GPIO_HIGH);
 //  gpio.set_level(configuration.relay_2_gpio, GPIO_HIGH);
@@ -185,7 +185,7 @@ int main(int argc, char **argv) {
   gpio.set_direction_out(configuration.relay_1_gpio);
 //  gpio.set_direction_out(configuration.relay_2_gpio);
 //  gpio.set_direction_out(configuration.relay_3_gpio);
-#endif
+//#endif
 
   int rc;
   mosquitto_lib_init();
