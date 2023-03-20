@@ -544,10 +544,11 @@ void PREFILL_SETTINGS(lv_event_t * e) {
 
   sprintf(charValue, "%d", configuration.relay_1_gpio);
   lv_textarea_set_text(ui_Relay1GPIO, charValue); 
-  sprintf(charValue, "%d", configuration.relay_2_gpio);
+/*  sprintf(charValue, "%d", configuration.relay_2_gpio);
   lv_textarea_set_text(ui_Relay2GPIO, charValue); 
   sprintf(charValue, "%d", configuration.relay_3_gpio);
   lv_textarea_set_text(ui_Relay3GPIO, charValue); 
+  */
 }
 
 void CLOSE_SETTINGS(lv_event_t * e) {
@@ -577,8 +578,8 @@ void CLOSE_SETTINGS(lv_event_t * e) {
   configuration.display_backlight_min = atoi(lv_textarea_get_text(ui_DisplayBacklightMin));
 
   configuration.relay_1_gpio = atoi(lv_textarea_get_text(ui_Relay1GPIO));
-  configuration.relay_2_gpio = atoi(lv_textarea_get_text(ui_Relay2GPIO));
-  configuration.relay_3_gpio = atoi(lv_textarea_get_text(ui_Relay3GPIO));
+  //configuration.relay_2_gpio = atoi(lv_textarea_get_text(ui_Relay2GPIO));
+  //configuration.relay_3_gpio = atoi(lv_textarea_get_text(ui_Relay3GPIO));
 
   save_configuration();
   mosquitto_disconnect(mosq);
@@ -599,6 +600,7 @@ void RELAY_1(lv_event_t * e) {
   }
 #endif
 }
+/*
 void RELAY_2(lv_event_t * e) {
 #ifndef USE_SDL
   if (lv_obj_has_state(ui_Relay2, LV_STATE_CHECKED)) {
@@ -617,3 +619,4 @@ void RELAY_3(lv_event_t * e) {
   }
 #endif
 }
+*/

@@ -72,15 +72,17 @@ lv_obj_t * ui_DisplayBacklightMin;
 lv_obj_t * ui_Relays;
 lv_obj_t * ui_Relay1;
 lv_obj_t * ui_Relay1Label;
+/*
 lv_obj_t * ui_Relay2;
 lv_obj_t * ui_Relay2Label;
 lv_obj_t * ui_Relay3;
 lv_obj_t * ui_Relay3Label;
+*/
 lv_obj_t * ui_RelaysSettings;
 lv_obj_t * ui_RelaysLabel;
 lv_obj_t * ui_Relay1GPIO;
-lv_obj_t * ui_Relay2GPIO;
-lv_obj_t * ui_Relay3GPIO;
+//lv_obj_t * ui_Relay2GPIO;
+//lv_obj_t * ui_Relay3GPIO;
 lv_obj_t * ui_WarnMessage;
 
 ///////////////////// FUNCTIONS ////////////////////
@@ -119,12 +121,14 @@ static void ui_event_ButtonSettingsClose(lv_event_t * e) {
 static void ui_event_relay_1(lv_event_t * e) {
     if(lv_event_get_code(e) == LV_EVENT_VALUE_CHANGED) RELAY_1(e);
 }
+/*
 static void ui_event_relay_2(lv_event_t * e) {
     if(lv_event_get_code(e) == LV_EVENT_VALUE_CHANGED) RELAY_2(e);
 }
 static void ui_event_relay_3(lv_event_t * e) {
     if(lv_event_get_code(e) == LV_EVENT_VALUE_CHANGED) RELAY_3(e);
 }
+*/
 static void ui_onclick_hide_element(lv_event_t * e) {
     if(lv_event_get_code(e) == LV_EVENT_CLICKED) {
         _ui_flag_modify(e->target, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
@@ -621,12 +625,12 @@ void ui_MainScreen_screen_init(void) {
     lv_obj_set_style_pad_bottom(ui_Relays, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Relay1 = lv_switch_create(ui_Relays);
-    ui_style_position(ui_Relay1, 0, 0, 32, 64, LV_ALIGN_TOP_LEFT);
+    ui_style_position(ui_Relay1, 0, 0, 48, 96, LV_ALIGN_TOP_LEFT);
     ui_style_switch(ui_Relay1);
     lv_obj_add_event_cb(ui_Relay1, ui_event_relay_1, LV_EVENT_ALL, NULL);
     ui_Relay1Label = lv_label_create(ui_Relays);
-    ui_style_label(ui_Relay1Label, "1. Relay", 70, 5);
-
+    ui_style_label(ui_Relay1Label, "JBL", 112, 16);
+/*
     ui_Relay2 = lv_switch_create(ui_Relays);
     ui_style_position(ui_Relay2, 0, 40, 32, 64, LV_ALIGN_TOP_LEFT);
     ui_style_switch(ui_Relay2);
@@ -640,7 +644,7 @@ void ui_MainScreen_screen_init(void) {
     lv_obj_add_event_cb(ui_Relay3, ui_event_relay_3, LV_EVENT_ALL, NULL);
     ui_Relay3Label = lv_label_create(ui_Relays);
     ui_style_label(ui_Relay3Label, "3. Relay", 70, 85);
-
+*/
     // ui_Navigation
     ui_Navigation = lv_obj_create(ui_MainScreen);
 
@@ -879,7 +883,8 @@ void ui_Settings_screen_init(void) {
     ui_Relay1GPIO = lv_textarea_create(ui_RelaysSettings);
     ui_style_position(ui_Relay1GPIO, 0, 25, 25, lv_pct(33), LV_ALIGN_TOP_LEFT);
     ui_style_textarea(ui_Relay1GPIO);
-    lv_textarea_set_placeholder_text(ui_Relay1GPIO, "Relay 1");
+    lv_textarea_set_placeholder_text(ui_Relay1GPIO, "JBL");
+    /*
     ui_Relay2GPIO = lv_textarea_create(ui_RelaysSettings);
     ui_style_position(ui_Relay2GPIO, lv_pct(33), 25, 25, lv_pct(33), LV_ALIGN_TOP_LEFT);
     ui_style_textarea(ui_Relay2GPIO);
@@ -888,7 +893,7 @@ void ui_Settings_screen_init(void) {
     ui_style_position(ui_Relay3GPIO, lv_pct(66), 25, 25, lv_pct(33), LV_ALIGN_TOP_LEFT);
     ui_style_textarea(ui_Relay3GPIO);
     lv_textarea_set_placeholder_text(ui_Relay3GPIO, "Relay 3");
-
+    */
     // Activate the keyboard in the first input field
     lv_keyboard_set_textarea(ui_Keyboard, ui_MqttHost);
 }

@@ -83,15 +83,17 @@ extern lv_obj_t * ui_DisplayBacklightMin;
 extern lv_obj_t * ui_Relays;
 extern lv_obj_t * ui_Relay1;
 extern lv_obj_t * ui_Relay1Label;
+/*
 extern lv_obj_t * ui_Relay2;
 extern lv_obj_t * ui_Relay2Label;
 extern lv_obj_t * ui_Relay3;
 extern lv_obj_t * ui_Relay3Label;
+*/
 extern lv_obj_t * ui_RelaysSettings;
 extern lv_obj_t * ui_RelaysLabel;
 extern lv_obj_t * ui_Relay1GPIO;
-extern lv_obj_t * ui_Relay2GPIO;
-extern lv_obj_t * ui_Relay3GPIO;
+//extern lv_obj_t * ui_Relay2GPIO;
+//extern lv_obj_t * ui_Relay3GPIO;
 extern lv_obj_t * ui_WarnMessage;
 
 
