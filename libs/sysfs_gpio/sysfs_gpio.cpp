@@ -63,7 +63,7 @@ bool SysFS_GPIO::set_direction_raw(uint8_t gpio, string raw) {
 bool SysFS_GPIO::set_level(uint8_t gpio, uint8_t level) {
   if (!is_exposed(gpio)) do_export(gpio);
 
-  ofstream out(_path(gpio).append("/level"));
+  ofstream out(_path(gpio).append("/value"));
   if (out) {
     out << (level ? "1" : "0") << endl;
     out.close();
@@ -81,7 +81,7 @@ bool SysFS_GPIO::set_level(uint8_t gpio, uint8_t level) {
  */
 bool SysFS_GPIO::is_exposed(uint8_t gpio) {
   ifstream sysfsFile;
-  sysfsFile.open(_path(gpio).append("/level"));
+  sysfsFile.open(_path(gpio).append("/value"));
   if(sysfsFile) return true;
   else return false;
 }
