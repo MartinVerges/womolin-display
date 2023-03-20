@@ -10,6 +10,9 @@
 
 #include "sysfs_gpio.h"
 
+#include <iostream>
+using namespace std;
+
 SysFS_GPIO::SysFS_GPIO() {};
 SysFS_GPIO::~SysFS_GPIO() {};
 
@@ -21,6 +24,7 @@ SysFS_GPIO::~SysFS_GPIO() {};
  * @return false on error
  */
 bool SysFS_GPIO::set_direction_out(uint8_t gpio) {
+  cout << "[SysFS] " << "set_direction_out(" << gpio << ")" << endl; 
   return set_direction_raw(gpio, "out");
 }
 
@@ -32,6 +36,7 @@ bool SysFS_GPIO::set_direction_out(uint8_t gpio) {
  * @return false on error
  */
 bool SysFS_GPIO::set_direction_in(uint8_t gpio) {
+  cout << "[SysFS] " << "set_direction_in(" << gpio << ")" << endl; 
   return set_direction_raw(gpio, "in");
 }
 
@@ -43,6 +48,7 @@ bool SysFS_GPIO::set_direction_in(uint8_t gpio) {
  * @return false on error
  */
 bool SysFS_GPIO::set_direction_raw(uint8_t gpio, string raw) {
+  cout << "[SysFS] " << "set_direction_raw(" << gpio << ", " << raw << ")" << endl; 
   if (!is_exposed(gpio)) do_export(gpio);
 
   ofstream out(_path(gpio).append("/direction"));
@@ -61,6 +67,7 @@ bool SysFS_GPIO::set_direction_raw(uint8_t gpio, string raw) {
  * @param level HIGH(true) or LOW(false) value
  */
 bool SysFS_GPIO::set_level(uint8_t gpio, uint8_t level) {
+  cout << "[SysFS] " << "set_level(" << gpio << ", " << level << ")" << endl; 
   if (!is_exposed(gpio)) do_export(gpio);
 
   ofstream out(_path(gpio).append("/value"));
@@ -80,6 +87,7 @@ bool SysFS_GPIO::set_level(uint8_t gpio, uint8_t level) {
  * @return false when the GPIO is not exported
  */
 bool SysFS_GPIO::is_exposed(uint8_t gpio) {
+  cout << "[SysFS] " << "is_exposed(" << gpio << ")" << endl; 
   ifstream sysfsFile;
   sysfsFile.open(_path(gpio).append("/value"));
   if(sysfsFile) return true;
@@ -94,6 +102,7 @@ bool SysFS_GPIO::is_exposed(uint8_t gpio) {
  * @return false when the GPIO is not exported
  */
 bool SysFS_GPIO::do_export(uint8_t gpio) {
+  cout << "[SysFS] " << "do_export(" << gpio << ")" << endl; 
   if (is_exposed(gpio)) return true;
 
   ofstream out(_base_path().append("/export"));
@@ -112,6 +121,7 @@ bool SysFS_GPIO::do_export(uint8_t gpio) {
  * @return false when the GPIO is not exported
  */
 bool SysFS_GPIO::do_unexport(uint8_t gpio) {
+  cout << "[SysFS] " << "do_unexport(" << gpio << ")" << endl; 
   if (!is_exposed(gpio)) return true;
 
   ofstream out(_base_path().append("/unexport"));

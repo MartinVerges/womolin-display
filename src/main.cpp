@@ -592,6 +592,7 @@ void LOADSCREEN(lv_event_t * e) {
 }
 
 void RELAY_1(lv_event_t * e) {
+  cout << "[UI] " << "Relay 1 - status change" << endl;
 #ifndef USE_SDL
   if (lv_obj_has_state(ui_Relay1, LV_STATE_CHECKED)) {
     gpio.set_level(configuration.relay_1_gpio, GPIO_LOW);

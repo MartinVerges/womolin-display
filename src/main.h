@@ -67,7 +67,3 @@ struct received_mqtt_data_t {
   uint8_t battery1;
   uint8_t battery2;
 };
-
-#define Relay_Ch1 26
-#define Relay_Ch2 20
-#define Relay_Ch3 21
